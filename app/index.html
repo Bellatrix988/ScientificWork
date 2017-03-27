@@ -1,0 +1,29 @@
+<html ng-app="viewFormula">
+<head>
+  <meta charset="utf-8">
+
+  <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+  <script type="text/javascript" src="js/contextFreeGrammar.js"></script>
+  <script type="text/javascript" src="js/buildFormula.js"></script>
+  <title> Marina Zakharova</title>
+<!--   <h1>Методы минимизации логичесих функций</h1>
+ <ol>
+    <li>Диаграммы Вейча(аналогичный метод карт Карно)</li>
+        <li><a href="https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%D0%9A%D1%83%D0%B0%D0%B9%D0%BD%D0%B0">Метод Квайна</a></li>
+        <li><a href="https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%D0%9A%D1%83%D0%B0%D0%B9%D0%BD%D0%B0_%E2%80%94_%D0%9C%D0%B0%D0%BA-%D0%9A%D0%BB%D0%B0%D1%81%D0%BA%D0%B8">Метод Куайна — Мак-Класки</a></li>
+        <li><a href="http://s1.fksis.ru/ml/%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D1%8F/content/theme2/subtheme3/subtheme3.htm">Метод импликантных матриц.</a></li>
+        <li>Метод испытания импликант</li>
+  </ol> -->
+</head>
+
+<body ng-controller="formController">
+  
+  <h4>Зададим функцию: </h4>
+  <span>Введите количество переменных:</span>
+  <input type="number" min="1" max="8" id="countVariable" value="2"/>
+  <button id="generate" ng-click="addItem()">Generate</button>
+  <h4>Результат:</h4>
+  <div ng-repeat="item in list"><span>{{item}}<br></span><br></div>
+
+</body>
+</html>
