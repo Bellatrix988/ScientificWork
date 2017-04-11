@@ -2,9 +2,7 @@
 <head>
   <meta charset="utf-8">
 
-  <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
-  <script type="text/javascript" src="js/contextFreeGrammar.js"></script>
-  <script type="text/javascript" src="js/buildFormula.js"></script>
+
   <title> Marina Zakharova</title>
 <!--   <h1>Методы минимизации логичесих функций</h1>
  <ol>
@@ -20,10 +18,17 @@
   
   <h4>Зададим функцию: </h4>
   <span>Введите количество переменных:</span>
-  <input type="number" min="1" max="8" id="countVariable" value="2"/>
+  <input type="number" min="1" max="8" id="countVariable" value="3"/>
   <button id="generate" ng-click="addItem()">Generate</button>
   <h4>Результат:</h4>
   <div ng-repeat="item in list"><span>{{item}}<br></span><br></div>
+
+
+<!-- Scripts -->
+  <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="js/contextFreeGrammar.js"></script>
+  <script type="text/javascript" src="js/buildFormula.js"></script>
 
 </body>
 </html>

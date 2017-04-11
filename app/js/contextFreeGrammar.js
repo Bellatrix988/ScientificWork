@@ -1,7 +1,6 @@
 //выбор 'случайного' правила из массива
 Array.prototype.choice = function() {
   var i = Math.floor(Math.random() * this.length);
-  //alert(i);
   return this[i];
 }
 
@@ -27,7 +26,7 @@ ContextFree.prototype.expand = function(start, expression) {
     var picked = products.choice();
 
     for (var i = 0; i < picked.length; i++) {
-      this.expand(picked[i], expansion);
+      this.expand(picked[i], expression);
     }
   } else {
     expression.push(start);

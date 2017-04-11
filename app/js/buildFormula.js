@@ -5,9 +5,11 @@ var cfree;
 var viewFormula = angular.module("viewFormula", []);
 
 viewFormula.controller("formController",function($scope){
+    $scope.countVariable = 3;
     $scope.list = model;
+
     $scope.addItem = function () {
-        $scope.list.push(cfree.getExpression('E'));
+        $scope.list.unshift(cfree.getExpression('E'));
     }
 })
 
@@ -19,37 +21,33 @@ function setupGrammar() {
   var variables = [];
   var countVars = document.getElementById("countVariable");
     for(i = 1; i <= countVars.value; i++)
-      variables[i-1] = "x" + i.toString();
+      variables[i - 1] = "x" + i.toString();
 
   //при повышении уровня будут добавляться
-  var operations = ['and', 'or'];
+  var operationsPriorityFirst = ['and'];
+  var operationsPrioritySecond = ['or'];
 
   //добавляем правила
-  for(var j = 0; j < operations.length; j++)
-    cfree.addRule('E', [ 'E',operations[j], 'T']);
-  
-  cfree.addRule('E', ['T']);
-  for(var j = 0; j < operations.length; j++)
-    cfree.addRule('T', [ 'T',operations[j], 'F']);
-  
+
+  for(var j = 0; j < operationsPrioritySecond.length; j++)
+    cfree.addRule('E', [ 'T',operationsPrioritySecond[j], 'T']);
+ cfree.addRule('E', ['T']);
+
+
+  for(var j = 0; j < operationsPriorityFirst.length; j++)
+    cfree.addRule('T', [ 'F',operationsPriorityFirst[j], 'F']);
   cfree.addRule('T', [ 'F']);
-  cfree.addRule('T', [ 'not','F']);
+  // cfree.addRule('T', [ 'not','T']);
+
+  
+  cfree.addRule('F', [ 'not','F']);
+  // cfree.addRule('F', [ 'not','(','E', ')']);
   cfree.addRule('F', [ '(','E', ')']);
 
   //добовляем переменные 
-  for(var i = 0; i < variables.length; i++)
+  for(var i = 0; i < variables.length; i++){
     cfree.addRule('F', [variables[i]]);
-
-  // cfree.addRule('E', ['(','T', ')']);
-  // cfree.addRule('E', ['T']);
-  // for(var j = 0; j < operations.length; j++)
-  //   cfree.addRule('T', [ 'F',operations[j], 'F']);
-  // cfree.addRule('T', [ 'F']);
-  // cfree.addRule('T', [ 'not','F']);
-  // cfree.addRule('F', [ 'E']);
-
+    // cfree.addRule('F', ['not', variables[i]]);
+  }
 }
 
-window.onload = function(){
-  setupGrammar();
-}
