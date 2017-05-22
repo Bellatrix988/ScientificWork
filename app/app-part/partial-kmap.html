@@ -1,0 +1,27 @@
+<section id="kmap" class="container block" ng-app="kmapApp">
+	<div  ng-controller="tableKMap">
+		<h1>Минимизация логических функций с помощью карт Карно</h1>
+		<span>Введите количество переменных:</span>
+		<input type="number" min="1" max="8" ng-model="countVariable"/>
+		<p>Начальная формула: {{formula}}</p>
+		<p>Минимизированная формула: {{minFormula}}</p>
+<!-- 	<svg class="svg_table">
+		<rect ng-attr-x="{{xAxis}}" ng-attr-y="{{yAxis}}" ng-attr-height="{{rectHeight}}" ng-attr-width="{{rectWidth}}" fill="#fff" ng-click="myFunc()"></rect>
+		<text fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" x="60" y="67" ng-bind="X" ></text>
+	</svg> -->
+<!-- 	<svg >
+		<rect x="40" y="0" height="40" width="40" fill="#FFFFFF" stroke="#000000"></rect>
+		<text fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" x="60" y="67" ng-bind="X" ></text>
+	</svg> -->
+		<div ng-init="myinit()">
+			<svg height="2560"  width="350">
+				<text  ng-repeat="elem in cells track by $index"fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] - 5}}">x1</text>
+				<rect ng-repeat="elem in cells track by $index" class="svg_table" ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldHeight}}" ng-attr-width="{{fieldWidth}}" fill="#fff" stroke="#000" ng-click="myFunc()"></rect>
+				<text  ng-repeat="elem in cells track by $index" fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] + 27}}">{{elem.value}}</text>
+			</svg>
+		</div>
+	</div>
+</section>
+
+
+

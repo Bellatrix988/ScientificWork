@@ -1,0 +1,41 @@
+{
+  "name": "scientificwork",
+  "version": "1.0.0",
+  "description": "my graduation work",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "angular-ui-router": "^1.0.3",
+    "gulp": "^3.9.1",
+    "normalize.css": "^7.0.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.10",
+    "gojs": "^1.7.10",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-less": "^3.3.0",
+    "gulp-cache": "^0.4.6",
+    "gulp-concat": "^2.6.1",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-imagemin": "^3.2.0",
+    "gulp-less": "^3.3.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-uglify": "^2.1.2",
+    "imagemin-pngquant": "^5.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marina Zakharova",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bellatrix988/ScientificWork.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Bellatrix988/ScientificWork/issues"
+  },
+  "homepage": "https://github.com/Bellatrix988/ScientificWork#readme"
+}

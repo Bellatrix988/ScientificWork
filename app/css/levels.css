@@ -1,0 +1,47 @@
+.levels {
+  padding-top: 10px;
+  margin: auto;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: space-between;
+  -webkit-align-items: space-between;
+      -ms-flex-align: space-between;
+          align-items: space-between;
+  -webkit-box-pack: start;
+  -webkit-justify-content: start;
+      -ms-flex-pack: start;
+          justify-content: start;
+  -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+}
+.levels button {
+  width: 120px;
+  height: 120px;
+  margin: 5px;
+}
+@media (min-width: 768px) and (max-width: 990px) {
+  .levels button {
+    width: 90px;
+    height: 90px;
+  }
+}
+@media (max-width: 768px) and (min-width: 310px) {
+  .levels button {
+    width: 90px;
+    height: 90px;
+  }
+}
+@media (max-width: 309px) and (min-width: 10px) {
+  .levels button {
+    width: 30px;
+    height: 30px;
+  }
+}

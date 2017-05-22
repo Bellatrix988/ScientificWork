@@ -1,0 +1,12 @@
+<section class="container">
+	<div class="buildFormula" ng-controller="formController" ng-init="setupGrammar()">
+		<h4>Зададим функцию: </h4>
+		<span>Введите количество переменных:</span>
+		<input type="number" min="1" max="8" ng-model="countVariable"/>
+		<button id="generate" ng-click="generateFormula(2,['0.7','0.6','0.6','0.7','1','0','0'])">Generate</button>
+		<h4>Результат:</h4>
+		<div ng-repeat="item in list track by $index"><span>{{item}}<br></span><br></div>
+
+		<div style="background: #00f00f;" id="res"></div>
+	</div>
+</section>

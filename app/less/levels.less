@@ -1,0 +1,38 @@
+@import url('variables.less');
+
+.levels{
+	padding-top: 10px;
+	margin: auto;
+	display: flex;
+	flex-direction: row;
+    align-items: space-between;
+    justify-content: start;
+    flex-wrap: wrap;
+	button{
+		width: 120px;
+		height: 120px;
+		margin: 5px;
+	}
+}
+
+
+@media (min-width: 768px) and (max-width: 990px) {
+	.levels button{
+		width: 90px;
+		height: 90px;
+	}
+}
+
+@media (max-width: 768px) and (min-width: 310px) {
+	.levels button{
+		width: 90px;
+		height: 90px;
+	}
+}
+
+@media (max-width: 309px) and (min-width: 10px){
+	.levels button{
+		width: 30px;
+		height: 30px;
+	}
+}

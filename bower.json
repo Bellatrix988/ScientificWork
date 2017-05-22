@@ -1,0 +1,26 @@
+{
+  "name": "logical_circuit",
+  "description": "Game-learning with the logical circuit and karnaugh map",
+  "main": "index.js",
+  "authors": [
+    "Marina Zakharova"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.6.4",
+    "angularfire": "^2.3.0",
+    "angular-ui-router": "^1.0.3",
+    "normalize.less": "^1.0.0"
+  },
+  "devDependencies": {
+    "gojs": "^1.7.10"
+  }
+}
