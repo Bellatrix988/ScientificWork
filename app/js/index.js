@@ -1,3 +1,4 @@
 window.onload = function(){
-  setupGrammar();
+  //setupGrammar();
+   //document.getElementById("res").innerHTML = cfree.getExpression('E');
 }
