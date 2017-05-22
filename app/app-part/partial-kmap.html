@@ -14,11 +14,21 @@
 		<text fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" x="60" y="67" ng-bind="X" ></text>
 	</svg> -->
 		<div ng-init="myinit()">
-			<svg height="2560"  width="350">
-				<text  ng-repeat="elem in cells track by $index"fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] - 5}}">x1</text>
-				<rect ng-repeat="elem in cells track by $index" class="svg_table" ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldHeight}}" ng-attr-width="{{fieldWidth}}" fill="#fff" stroke="#000" ng-click="myFunc()"></rect>
+			<svg height="200"  width="150">
+				<text  ng-repeat="elem in cells track by $index"fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] - 5}}">{{elem.uniqueID}}</text>
+				<rect ng-repeat="elem in cells track by $index" ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldHeight}}" ng-attr-width="{{fieldWidth}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value?1:0"></rect>
 				<text  ng-repeat="elem in cells track by $index" fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] + 27}}">{{elem.value}}</text>
 			</svg>
+
+				<svg height="200"  width="150">
+				<text  ng-repeat="elem in cells track by $index"fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] - 5}}">{{elem.uniqueID}}</text>
+				<rect ng-repeat="elem in cells track by $index" class="svg_table" ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldHeight}}" ng-attr-width="{{fieldWidth}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value?1:0"></rect>
+				<text  ng-repeat="elem in cells track by $index" fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] + 27}}">{{elem.value}}</text>
+			</svg>
+		</div>
+
+		<div ng-init="myinit()">
+
 		</div>
 	</div>
 </section>

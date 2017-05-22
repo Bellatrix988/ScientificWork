@@ -38,7 +38,7 @@ routingApp.config(function($stateProvider, $urlRouterProvider) {
 });
 
 
-var headerApp = angular.module('headerApp',['kmapApp','exprApp','routingApp']);
+var headerApp = angular.module('headerApp',['kmapApp','exprApp','routingApp','userInfoApp']);
 // headerApp.filter('unique', function() {
 //    return function(collection, keyname) {
 //       var output = [], 

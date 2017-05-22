@@ -13,8 +13,9 @@ kmapApp.controller("tableKMap", function($scope,FormulaService){
 	// $scope.myFunc = function(){
 	// 	$scope.X = 0;
 	// }
+
 	//получаем матрицу
-	$scope.tTable = formulaToTruthTabl($scope.countVariable, $scope.formula);
+	$scope.tTable = formulaToTruthTabl($scope.countVariable, $scope.formula);;
 
 	//задали высоту и ширину ячеек
 	$scope.fieldHeight = 40;
@@ -28,10 +29,12 @@ kmapApp.controller("tableKMap", function($scope,FormulaService){
 		//вычисляем размеры карты
 		this.columns = $scope.tTable[0].length; //Math.pow(2,c); 
 		this.rows = $scope.tTable.length; //Math.pow(2,r);
-    	this.fieldBorder = c * 20;
+    	this.fieldBorder = c * 25;
 
 		$scope.cells.length = 0;
+		$scope.myFunc = function(){
 
+		}
 		var id = 0;
 	    for (var i = 0; i < this.rows; i++) {
 	      for (var j = 0; j < this.columns; j++) {
@@ -39,7 +42,7 @@ kmapApp.controller("tableKMap", function($scope,FormulaService){
 	        field.position[0] = this.fieldBorder + j * this.fieldWidth;
 	        field.position[1] = this.fieldBorder + i * this.fieldHeight;
 	        field.value = parseInt($scope.tTable[i][j]);
-	        field.uniqueID = id;
+	        field.uniqueID = ((j+1) == this.columns)? "f" : "x" + (j + 1);
 	        $scope.cells.push(field);
 	        id++;
 	      }
