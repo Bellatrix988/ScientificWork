@@ -17,6 +17,7 @@
   <link rel="stylesheet" type="text/css" href="css/levels.css">
   <link rel="stylesheet" type="text/css" href="css/header.css">
   <link rel="stylesheet" type="text/css" href="css/nav_button.css">
+  <link rel="stylesheet" type="text/css" href="css/user.css">
   <!-- <link rel="stylesheet" type="text/css" href="css/style.min.css"> --> 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
@@ -24,11 +25,10 @@
 <section id="head" ng-app="headerApp">
   <header class="header__container" ng-app="userInfoApp" ng-controller="infoCtrl">
     <div class="arrow_back" ui-sref="home"><img src="img/arrow-left.svg" width="30px"></div>
-    <div class="infoUser"><span ng-click="update()">{{userInfo.name}} <img src="img/star.svg" width="30px">{{userInfo.level}}</span></div>
-    <div class="onChange">
-      <input type="text" ng-model="newName"><button type="submit" ng-click="updateName(newName)">Change</button>
-    </div>
+    <div class="infoUser" ng-click="openPopUp()"><span ng-click="update()">{{userInfo.name}} <img src="img/star.svg" width="30px">{{userInfo.level}}</span></div>
+    <pop-up-msg></pop-up-msg>
   </header>
+
   <div >
     <ui-view></ui-view>
   </div>

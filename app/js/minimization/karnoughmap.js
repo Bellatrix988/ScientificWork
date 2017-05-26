@@ -1,13 +1,5 @@
 
-
-
-
-
-
-
-
-
-/*// for a good javascript reference, see http://wp.netscape.com/eng/mozilla/3.0/handbook/javascript/
+// for a good javascript reference, see http://wp.netscape.com/eng/mozilla/3.0/handbook/javascript/
 
 // Constants
 var MaxVariableCount=4;							
@@ -49,7 +41,7 @@ function InitializeTables(VarCount)
 	KMap.Width=Width[VariableCount];
 	KMap.Height=Height[VariableCount];
 
-	for (i=0; i< Math.pow(2,VariableCount); i++)
+	for (i=0; i<Math.pow(2,VariableCount); i++)
 	{
 		TruthTable[i] = new Array();
 		TruthTable[i].Index = i;
@@ -260,7 +252,7 @@ function SearchRect( w,h, TestValue, Found, DoCover )
 // Iterates through an array of Rects (in order) to determine which of them
 //  cover something in the KMap and which don't (because previous ones already
 //  have covered enough).  Adds rects that do cover something to the Used array.
-function TryRects(Rects,Used)
+function TryRects(Rects, Used)
 {
     var j = 0;
     for (j = 0; j < Rects.length; j++)
@@ -372,4 +364,427 @@ function FindBestCoverage(Rects,AllRects)
         {   // just found the last Rect, break out
             break;
         }
-        // Make the weight map very heavy for the selected Rect…*/
+        // Make the weight map very heavy for the selected Rect's squares
+        AddRectWeight(Weights, Rects[0], Heavy);
+        
+        // Reduce the weight for Rects that overlap the selected Rect
+        for (j=0; j< Rects.length; j++)
+        {
+            if (OverlappingRects(Rects[0], Rects[j]))
+            {
+                AddRectWeight(Weights, Rects[j], -1);
+            }
+        }
+        // continue processing with all the Rects but the first one
+        Rects = Rects.slice(1);
+    }
+    
+    // determine which of the sorted array of Rects are actually needed
+    TryRects(SortedRects, AllRects);
+}
+	
+//Finds the minimized equation for the current KMap.
+function Search()
+{
+    var Rects = new Array();
+    Cover(CreateRect(0, 0, KMap.Width, KMap.Height), false);
+
+    // Find the (larger) rectangles that cover just the quares in the KMap
+    //  and search for smaller and smaller rects
+    SearchRect(4, 4, true, Rects, true);
+    SearchRect(4, 2, true, Rects, true);
+    SearchRect(2, 4, true, Rects, true);
+    SearchRect(1, 4, true, Rects, true);
+    SearchRect(4, 1, true, Rects, true);
+    SearchRect(2, 2, true, Rects, true);
+
+    // 2x1 sized rects  - These have to be handled specially in order to find a 
+    //  minimized solution.  
+    var Rects2x1 = new Array();
+    SearchRect(2, 1, true, Rects2x1, false);
+    SearchRect(1, 2, true, Rects2x1, false);
+    FindBestCoverage(Rects2x1, Rects);
+
+    // add the 1x1 rects
+    SearchRect(1, 1, true, Rects, true);
+
+    //check to see if any sets of (necessary) smaller rects fully cover larger ones (if so, the larger one is no longer needed)
+    Cover(CreateRect(0, 0, KMap.Width, KMap.Height), false);
+    for (i = Rects.length - 1; i >= 0; i--)
+    {
+        if (IsCovered(Rects[i]))
+        {
+            Rects[i] = null;
+        }
+        else
+        {
+            Cover(Rects[i], true);
+        }
+    }
+	
+	ClearEquation();	
+	for (i=0;i<Rects.length; i++)
+	{
+		if (Rects[i]!=null)
+		{
+			RectToEquation(Rects[i]);
+		}
+	}
+	if (Equation.UsedLength==0)
+	{
+		Equation.UsedLength=1;
+		Equation[0].Expression="0";
+		Equation[0].Rect = CreateRect(0,0,KMap.Width,KMap.Height);
+	}
+}
+
+function ClearEquation()
+{
+	for (i=0; i<Equation.length; i++)
+	{
+		Equation[i].Rect	= null;
+	}
+	Equation.UsedLength=0;
+}
+
+// returns true if the rect is entirely within a singel given variable 
+function IsConstantVariable( Rect, Variable )
+{
+	var dx=0;
+	var dy=0;
+	var topleft = KMap[Rect.x][Rect.y].Variable[Variable];
+	for (dx=0; dx<Rect.w; dx++)
+	{
+		for (dy=0; dy<Rect.h; dy++)
+		{
+			test = KMap[(Rect.x+dx)%KMap.Width][(Rect.y+dy)%KMap.Height].Variable[Variable];
+			if (test!=topleft)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+// Turns a rectangle into a text minterm (in HTML)
+function RectToEquation( Rect )
+{
+	var Text = "";
+	var i=0;
+	for (i=0; i<VariableCount; i++)
+	{
+		if (IsConstantVariable( Rect, i))
+		{
+			if (!KMap[Rect.x][Rect.y].Variable[i])
+			{
+				Text += "<span style='text-decoration: overline'>"+VariableNames[i]+"</span> ";
+			}
+			else
+			{
+				Text += VariableNames[i] + " ";
+			}
+		}
+	}
+	if (Text.length==0)
+	{
+		Text="1";
+	}
+	Equation[Equation.UsedLength].Rect  = Rect;
+	Equation[Equation.UsedLength].Expression = Text;
+	Equation.UsedLength++;
+	
+	return Text;
+}
+	
+
+//просто тернарной операцией у меня
+// turns a boolean into a display value  true->"1"  false->"0"
+function DisplayValue( bool )
+{
+	if (bool==true)
+	{
+		return "1";
+	}
+	else if (bool==false)
+	{
+		return "0";
+	}
+	else return DontCare;
+}
+
+// Turns a number into binary in text (prepends 0's to length 'bits')
+//у меня это while and slice
+function BinaryString( value, bits )
+{
+	var str = value.toString(2);
+	var i=0;
+	for (i=0; i<bits; i++)
+	{
+		if (str.length<bits)
+		{
+			str = "0" + str;
+		}
+	}
+	return str;
+}
+
+// redraws UI (with no highlights)
+function UpdateUI()
+{
+    var i = 0;
+    for (i = 0; i < TruthTable.length; i++)
+    {
+        var Val = DisplayValue(TruthTable[i].KMapEntry.Value);
+        //Truth Table
+        SetValue(TruthTable[i].ButtonUIName, Val);
+        SetBackgroundColor(TruthTable[i].ButtonUIName, HighlightColor(Val));
+        SetBackgroundColor(TruthTable[i].TTROWUIName, HighlightColor(Val));
+        //KMap
+        SetValue(TruthTable[i].KMapEntry.ButtonUIName, Val);
+        SetBackgroundColor(TruthTable[i].KMapEntry.ButtonUIName, HighlightColor(Val));
+        SetBackgroundColor(TruthTable[i].KMapEntry.TDUIName, HighlightColor(Val));
+    }
+    SetInnerHTML("EquationDiv", GenerateEquationHTML());
+}
+	
+function ToggleValue( Value )
+{
+	if (AllowDontCare)
+	{
+		if (Value==true)
+		{
+			return DontCare;
+		}
+		else if (Value==DontCare)
+		{
+			return false;
+		}
+		else if (Value==false)
+		{
+			return true;
+		}
+	}
+	else
+	{
+		return !Value;
+	}
+}
+
+function ToggleTTEntry( TTEntry )
+{
+	TTEntry.KMapEntry.Value = ToggleValue(TTEntry.KMapEntry.Value);
+	RefreshUI();
+}
+
+function ToggleKMEntry( KMEntry )
+{
+	KMEntry.Value = ToggleValue(KMEntry.Value);
+	RefreshUI();
+}
+
+function RefreshUI()
+{
+	ClearEquation();
+	Search();
+	UpdateUI();
+}
+
+// redraws UI with the given equation highlighted
+function SetShowRect( EquationEntry, EquationIndex )
+{	
+	if (EquationEntry==null)
+	{
+		UpdateUI();
+		return;
+	}
+	else
+	{
+	    var ShowRect = EquationEntry.Rect;
+
+	    var dx = 0;
+        var dy = 0;
+        for (dx = 0; dx < ShowRect.w; dx++)
+        {
+            for (dy = 0; dy < ShowRect.h; dy++)
+            {
+                var KMEntry = KMap[(ShowRect.x + dx) % KMap.Width][(ShowRect.y + dy) % KMap.Height];
+                var Val = DisplayValue(TruthTable[i].KMapEntry.Value);
+                //KMap
+                SetBackgroundColor(KMEntry.ButtonUIName, RectHighlightColor(Val));
+                SetBackgroundColor(KMEntry.TDUIName, RectHighlightColor(Val));
+                //Truth Table
+                SetBackgroundColor(KMEntry.TruthTableEntry.ButtonUIName, RectHighlightColor(Val));
+                SetBackgroundColor(KMEntry.TruthTableEntry.TTROWUIName, RectHighlightColor(Val));
+            }
+        }
+	}
+	SetBackgroundColor(Equation[EquationIndex].ButtonUIName,EquationHighlightColor);
+}
+
+function GetElement(Name)
+{
+	if (document.getElementById)
+	{
+		return document.getElementById(Name);
+	}
+	else if (document.all)
+	{
+		return document.all[Name];
+	}
+	else if (document.layers)
+	{
+		//not sure this works in all browsers... element.style would be document.layers[Name];
+	}
+}
+
+function SetInnerHTML(Name,Text)
+{
+	GetElement(Name).innerHTML = Text
+}
+
+function SetBackgroundColor(Name,Color)
+{
+	GetElement(Name).style.backgroundColor = Color;
+}
+
+function SetValue(Name,Value)
+{
+	GetElement(Name).value = Value;
+}
+
+function GenerateTruthTableHTML()
+{
+	var Text = "<H3>Truth Table</H3></center><table class=\"table\" ID=\"TruthTableID\">";  //table class
+	{
+		Text = Text + "<tr>";
+		var i=0;
+		for (i=0; i<VariableCount; i++)
+		{
+			Text = Text + "<th>"+VariableNames[i]+"</th>";
+		}
+		Text = Text + "<th>"+FunctionText+"</th></tr>";
+			
+		for (i=0; i<TruthTable.length; i++)
+		{
+			Text += "<tr ID='"+TruthTable[i].TTROWUIName+"';>";  
+			var j=0;
+			for (j=0; j<VariableCount; j++)
+			{
+				Text = Text + "<td>"+DisplayValue(TruthTable[i][j].Variable)+"</td>";
+			}
+			Text = Text
+				+ "<td><input ID="+TruthTable[i].ButtonUIName +" name="+TruthTable[i].ButtonUIName +" type='button'; style='width:70%'; value='"+DisplayValue(TruthTable[i].KMapEntry.Value)+"'; onClick=ToggleTTEntry(TruthTable["+i+"]); ></td>" 
+				+ "</tr>";
+		}
+	}
+	Text = Text + "</table>";
+	return Text;
+}
+
+function GenerateKarnoMapHTML()
+{
+	var Text = "<H3>Karnaugh Map</H3>";
+	Text = Text + "<table class=\"table\" >";  //class=table
+	var h,w;
+	Text = Text + "<tr><th></th><th></th><th colspan="+(KMap.Width)+">";
+	for (i=0; i<KMap.XVariables; i++)
+	{
+		Text += VariableNames[i];
+	}
+	Text += "</th></tr>";
+	Text += "<tr>";
+	Text += "<th></th><th></th>";
+	for (i=0; i<KMap.Width; i++)
+	{
+		Text += "<th>"+BinaryString(BitOrder[i],KMap.XVariables)+"</th>";
+	}
+	Text+="</tr>";
+	
+	for (h=0; h<KMap.Height; h++)
+	{
+		Text = Text + "<tr>";
+		if (h==0)
+		{
+			Text += "<th rowspan="+(KMap.Height)+">";
+			for (i=0; i<KMap.YVariables; i++)
+			{
+				Text += VariableNames[i+KMap.XVariables];
+			}
+		}
+		Text += "<th>"+BinaryString(BitOrder[h],KMap.YVariables)+"</th>";
+
+		for (w=0; w<KMap.Width; w++)
+		{
+			Text += "<td  ID='"+KMap[w][h].TDUIName+"'; style='background-color:0xFF'>"
+					+ "<input ID="+KMap[w][h].ButtonUIName +" name="+KMap[w][h].ButtonUIName +" type='button'  value='"+DisplayValue(KMap[w][h].Value)+"'; onClick=ToggleKMEntry(KMap["+w+"]["+h+"]);>"
+					+ "</td>";
+		}
+		Text += "</tr>";
+	}
+	Text += "</table>";
+	return Text;
+}
+
+function GenerateEquationHTML()
+{
+	var j;
+	var Text = "<H3>Boolean Expression</H3>";
+	var i;
+	for (i=0; i<Equation.UsedLength; )
+	{
+	Text += "<table>";
+	for (j=0; (j<4) && (i<Equation.UsedLength); j++)
+	{
+		if (i==0) Text+= "<td><b>"+FunctionText + " = &nbsp;</td>";
+		if (i==4) Text+= "<td style='width:75px'></td>";
+		Text += "<td ID="+Equation[i].ButtonUIName;
+		Text += " onMouseOver=SetShowRect(Equation["+i+"],"+i+"); onMouseOut=SetShowRect(null); ";
+		Text += "><b> " + Equation[i].Expression + "</td>";
+		if (i<Equation.UsedLength-1) Text +="<td style='width:20px;text-align:center;'> + </td>";
+		i++;
+	}	
+	Text+="</table>";
+	}
+	return Text;
+}
+
+function ChangeVariableNumber( Num )
+{
+	InitializeTables(Num);
+	ClearEquation();
+	SetInnerHTML("TruthTableDiv",GenerateTruthTableHTML());
+	SetInnerHTML("KarnoMapDiv",GenerateKarnoMapHTML());
+	SetInnerHTML("EquationDiv",GenerateEquationHTML());
+	GetElement("TwoVariableRB").checked   = (Num==2)?true:false;
+	GetElement("ThreeVariableRB").checked = (Num==3)?true:false;
+	GetElement("FourVariableRB").checked  = (Num==4)?true:false;
+	Search();
+	UpdateUI();
+}
+
+function ToggleDontCare()
+{
+	AllowDontCare=!AllowDontCare;
+	var i=0;
+	for (i=0;i<TruthTable.length; i++)
+	{
+		if (TruthTable[i].KMapEntry.Value==DontCare)
+		{
+			TruthTable[i].KMapEntry.Value=false;
+		}
+	}
+	ChangeVariableNumber(VariableCount);
+	GetElement("AllowDontCareCB").checked = AllowDontCare;
+}
+
+function PageParameter( Name )
+{
+	var Regex = new RegExp( "[\\?&]"+Name+"=([^&#]*)" );
+	var Results = Regex.exec( window.location.href );
+	if( Results != null )
+	{
+		return Results[1];
+	}
+	return "";
+}

@@ -365,8 +365,6 @@ function KarnaughMap(parentDivId, qmcRef) {
     }
   }
 
-
-
   function drawKVField(fieldId) {
 
     var fieldPosX = data.getKVFieldPositionX(fieldId);

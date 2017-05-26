@@ -11,8 +11,7 @@ var dataBase = {};
 	        openDB();
 	        createTable();
 	        selectWrite();
-	        // return arrayH[0];
-	        // alert("onload");
+
 	};
     openDB = function () {
         dataBase = openDatabase('dbUser', '1.0', 'DataBase of User', 1024 * 1024 * 5);
@@ -52,7 +51,24 @@ var dataBase = {};
 
 var userInfoApp = angular.module("userInfoApp", []);
 
+userInfoApp.directive('popUpMsg', function(){
+  return {
+    restrict: 'E',
+    scope: false,
+    template: '<div id="popUpMsg-bg" ng-show="showPopUpMsg"><div id="popUpMsg"><div class="close" ng-click="closePopUp()">x</div><div class="content"><input type="text" ng-model="newName"></div><button type="submit" ng-click="updateName(newName); closePopUp()">Изменить</button></div></div>',
+    controller: function($scope) {
+      $scope.closePopUp = function(){
+        $scope.showPopUpMsg = false;
+      }
+    }
+  }
+})
+
 userInfoApp.controller("infoCtrl",function($scope){
+    $scope.showPopUpMsg = false;
+    $scope.openPopUp = function() {
+        $scope.showPopUpMsg = true;
+    }
 	$scope.userInfo = {};
     $scope.updateName = function (name) {
         dataBase.transaction(function (tx) {
@@ -76,3 +92,4 @@ userInfoApp.controller("infoCtrl",function($scope){
     };
 
 });
+
