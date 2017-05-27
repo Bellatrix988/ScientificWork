@@ -240,6 +240,7 @@ function getFormula() {
             if ((widthCont > KMap.Width) || (heightCont > KMap.Height)) {
                 return; 
             }
+            var i,j;
             var loopOfColumns = (KMap.Width == widthCont) ? 1 : KMap.Width;
             var loopOfRows = (KMap.Height == heightCont) ? 1 : KMap.Height;
             for (i = 0; i < loopOfColumns; i++) {
@@ -265,15 +266,15 @@ function getFormula() {
             // SearchContour(4, 4, true, Contours, true);
             // SearchContour(4, 2, true, Contours, true);
             // SearchContour(2, 4, true, Contours, true);
-            // SearchContour(1, 4, true, Contours, true);
-            // SearchContour(4, 1, true, Contours, true);
-            SearchContour(2, 2, true, Contours, true);
+            SearchContour(1, 4, true, Contours, true);
+            SearchContour(4, 1, true, Contours, true);
+            // SearchContour(2, 2, true, Contours, true);
 
             // 2x1 sized Contours  - These have to be handled specially in order to find a 
             //  minimized solution.  
             var Contours2x1 = new Array();
-            SearchContour(2, 1, true, Contours2x1, false);
-            SearchContour(1, 2, true, Contours2x1, false);
+            // SearchContour(2, 1, true, Contours2x1, false);
+            // SearchContour(1, 2, true, Contours2x1, false);
             //FindBestCoverage(Contours2x1, Contours);
 
             // add the 1x1 Contours
@@ -403,11 +404,14 @@ function toVariableText(variables){
 	return res1.trim() +" "+ res2.trim();
 }
 
+//Извлекает из карты проекцию контура
 function copyPartMap(current, KMap){
-	// var a = contour.height == KMap.Height?
+	var i = 0;
 	var cellsInContours = [];
+	if(current.width > current.height)
+		return KMap[current.y % KMap.Height].slice(current.x, current.width + current.x);
 	for(i = 0; i < current.height; i++){
-		let temp = KMap[current.x + i].slice(current.y,current.width + current.y);
+		temp = KMap[(current.y + i) % KMap.Width].slice(current.x, current.width + current.x);
 		console.log("expr part", temp);
 		cellsInContours.push(temp[0]);
 	}
@@ -415,18 +419,18 @@ function copyPartMap(current, KMap){
 }
 
 function bondingVars(contour, KMap){
-	var resWidth = ["11","11","11","11"]//[];
-	var resHeight = ["00","01","11","10"]//[];
+	var resWidth = [];//["11","11","11","11"]//[];
+	var resHeight = [];//["00","01","11","10"]//[];
 	var realContour = copyPartMap(contour, KMap);
 	realContour.forEach(function(item){
 		item.uniqueID = contour.ID;
 	})
 	var resultExpression = "";
-	// realContour.forEach(function(item){
-	// 	resWidth.push(item.variablesText.topSide);
-	// 	resHeight.push(item.variablesText.leftSide);
-	// });
-	// console.log("wh:",resWidth, resHeight);
+	realContour.forEach(function(item){
+		resWidth.push(item.variablesText.topSide);
+		resHeight.push(item.variablesText.leftSide);
+	});
+	console.log("wh:",resWidth, resHeight);
 	resWidth = resWidth.reduce(function(sum, item){
 		return myTest(sum, item);
 	});
@@ -442,7 +446,8 @@ function bondingVars(contour, KMap){
 		for(var k = 0; k < res.length; k++){
 			if(res[k] != 'x'){
 				let temp = item.variable.split(' ');
-				resultExpression += temp[k];
+				resultExpression = resultExpression.includes(temp[k]) ? 
+					resultExpression : resultExpression + temp[k];
 			}
 		}
 	})
