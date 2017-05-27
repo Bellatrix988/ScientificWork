@@ -2,6 +2,7 @@
 function Cell() {
     this.position = [0.0, 0.0];
     this.value = false;
+    this.color = "#000";
     this.uniqueID = -1; //для связи с выражением
     this.truthmapID = -1;	//для связи с таблицей истинности
     this.variablesText = {
@@ -16,7 +17,6 @@ function Term(){
 	this.value = "";
 	this.ID = -1;
 }
-
 var kmapApp = angular.module("kmapApp", ['ngMaterial']);
 
 //Позволяет инициализировать массив с нужными числами
@@ -44,10 +44,11 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
     }
 
     //Количество переменных в формуле
-    $scope.countVariable = 2;
+    $scope.countVariable = 4;
 
     //Начальная сгенерированная формула
-    $scope.formula = "x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//getFormula($scope.countVariable, []);
+    $scope.formula = getFormula($scope.countVariable, []); //"x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//
+	$scope.colors = ['red','green','blue','yellow','red','green','blue','yellow','red','green','blue','yellow'];
 
     //инициализирует основные элементы логики для связи с UI
     $scope.initFormUI = function() {
@@ -85,6 +86,15 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
         $scope.computeScale = function(x) {
             return x * $scope.fieldScale + this.fieldBorder;
         }
+
+        $scope.changeColor = function(id, color){
+			$scope.cellsMap.forEach(function(item){
+				item.forEach(function(itemIn){
+					if(itemIn.uniqueID == id)
+						itemIn.color = color;
+				})
+			})
+		};
 
         //Заполняем таблицу истинности и ее поля для вывода в UI
         for (var i = 0; i < this.rows; i++) {
@@ -128,6 +138,9 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
         $scope.minFormula = getMinFormula($scope.cellsMap);
         $scope.initFormUI();
     }
+
+
+
 });
 
 //Сервис для получени формул(случайной и минимизированной)
@@ -186,6 +199,7 @@ function getFormula() {
             Obj.y = y;
             Obj.width = w;
             Obj.height = h;
+            Obj.ID = -1;
             return Obj;
         }
 
@@ -233,7 +247,8 @@ function getFormula() {
                     var Contour = createContour(i, j, widthCont, heightCont);
                     if (isFullEqSample(Contour, sample)) {
                         if (!isCovered(Contour)) {
-                            ResultCont[ResultCont.length] = Contour;
+                        	Contour.ID = ResultCont.length + 1;
+                            ResultCont.push(Contour);
                             if (DoCover) Cover(Contour, true);
                         }
                     }
@@ -297,15 +312,14 @@ function getFormula() {
 
         function getResultExpr(contours){
         	var result = new Array(contours.length);
-    		var resExpr = "";
-        	contours.forEach(function(current){
-        		var cellsInContours = copyPartMap(current, KMap);
-        		cellsInContours.forEach(function(cell){
-        			resExpr += cell.variable;
-        		})
-        	});
-    		return resExpr;
+        	contours.forEach(function(item, i){
+        		let help = bondingVars(item, KMap);
+        		result[i] = help;
+        	})
+
+    		return result;
         }
+
 
         function MinFormula() {
             var result = Search();
@@ -381,12 +395,12 @@ function toVariableText(variables){
 		res2 = "";
 	var k;
 	for(k = 0; k < variables.leftSide.length; k++){
-		res1 += parseInt(variables.leftSide[k]) ? "x" + (k + 1) : "!x" + (k+1);
+		res1 += " " + (parseInt(variables.leftSide[k]) ? "x" + (k + 1) : "!x" + (k+1));
 	}
 	for(i = 0; i < variables.topSide.length; i++){
-		res2 += parseInt(variables.topSide[i]) ? "x" + (i+ k + 1) : "!x" + (i+k+1);
+		res2 += " " + (parseInt(variables.topSide[i]) ? "x" + (i+ k + 1) : "!x" + (i+k+1));
 	}
-	return res1 +" "+ res2;
+	return res1.trim() +" "+ res2.trim();
 }
 
 function copyPartMap(current, KMap){
@@ -399,3 +413,56 @@ function copyPartMap(current, KMap){
 	}
 	return cellsInContours;
 }
+
+function bondingVars(contour, KMap){
+	var resWidth = ["11","11","11","11"]//[];
+	var resHeight = ["00","01","11","10"]//[];
+	var realContour = copyPartMap(contour, KMap);
+	realContour.forEach(function(item){
+		item.uniqueID = contour.ID;
+	})
+	var resultExpression = "";
+	// realContour.forEach(function(item){
+	// 	resWidth.push(item.variablesText.topSide);
+	// 	resHeight.push(item.variablesText.leftSide);
+	// });
+	// console.log("wh:",resWidth, resHeight);
+	resWidth = resWidth.reduce(function(sum, item){
+		return myTest(sum, item);
+	});
+	// console.log("w",resWidth);
+	resHeight = resHeight.reduce(function(sum, item){
+		return myTest(sum, item);
+	});
+	// console.log("h",resHeight);
+	var res = resHeight.concat(resWidth);//["01","11"];
+	// console.log(res);
+
+	realContour.forEach(function(item){
+		for(var k = 0; k < res.length; k++){
+			if(res[k] != 'x'){
+				let temp = item.variable.split(' ');
+				resultExpression += temp[k];
+			}
+		}
+	})
+	// console.log(resultExpression);
+	let term = new Term();
+	term.value = resultExpression;
+	term.ID = contour.ID;
+	return term;
+}
+
+function myTest(sum, item){
+	var result = new Array(sum.length);
+	for (var i  = 0; i < sum.length; i++){
+		if((parseInt(sum[i]) != parseInt(item[i])))
+			result[i] = 'x';
+		else
+			result[i] = sum[i];
+	}
+	return result;
+}
+
+
+const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
