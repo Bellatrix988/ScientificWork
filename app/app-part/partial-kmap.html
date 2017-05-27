@@ -1,14 +1,50 @@
 <section id="kmap" class="container block" ng-app="kmapApp">
-	<div  ng-controller="tableKMap" ng-init="myinit()"> 
+	<div  ng-controller="tableKMap" ng-init="initFormUI()"> 
 		<h1>Минимизация логических функций с помощью карт Карно</h1>
 		<span>Введите количество переменных:</span>
 		<!-- ng-model="countVariable" -->
 		<select ng-options="str for str in [] | range:1:9" ng-model="countVariable" ng-change="changeSelectedItem()"> 
 			<option value="" selected>--Please select count variables--</option>
 		</select>
+<!-- 		<md-select n ng-model="countVariable" ng-change="changeSelectedItem()"> 
+			<md-option value="" selected>--Please select count variables--</md-option>
+			<md-option ng-repeat="str for str in [] | range:1:9">{{str}}</md-option>
+		</md-select> -->
 		<p>Начальная формула: {{formula}}</p>
 		<p>Минимизированная формула: {{minFormula}}</p>
-		<div >
+<!-- 		<div ng-cloak>
+		  <md-content>
+		    <md-tabs md-dynamic-height md-border-bottom>
+		      <md-tab label="Karnaugh Map">
+		        <md-content>
+		        	<svg ng-attr-height="{{computeScale(cellsMap.Height) + 20}}"  ng-attr-width="{{computeScale(cellsMap.Width) + 20}}">
+					<text  ng-repeat="elem in cellsMap[0] track by $index" fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] -5}}">{{elem.variablesText.topSide}}</text>
+					<text  ng-repeat="row in cellsMap track by $index" fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{row[0].position[0] - 15}}" ng-attr-y="{{row[0].position[1] + 27}}">{{row[0].variablesText.leftSide}}</text>
+					<g ng-repeat="row in cellsMap">
+						<rect ng-repeat="elem in row track by $index" ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value?1:0"></rect>
+						<text  ng-repeat="elem in row track by $index" fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] + 27}}">{{elem.value?1:0}}</text>
+					</g>
+			</svg>
+		        </md-content>
+		      </md-tab>
+		      <md-tab label="Truth Table">
+		        <md-content>
+		       		<svg ng-attr-height="{{computeScale(cellsTTable.Height)}}"  ng-attr-width="{{computeScale(cellsTTable.Width)}}">
+					<text  ng-repeat="elem in cellsTTable | limitTo:countVariable + 1 track by $index"fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] - 5}}">{{elem.variable}}</text>
+					<g ng-repeat="elem in cellsTTable track by $index" >
+						<rect  ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value?1:0"></rect>
+						<text  fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] + 27}}">{{elem.value}}</text>
+					</g>
+				</svg>
+		        </md-content>
+		      </md-tab>
+
+		    </md-tabs>
+		  </md-content>
+		</div>
+ -->
+		<div>
+
 			<!-- <svg ng-attr-height="{{computeScale(cellsTTable.Height)}}"  ng-attr-width="{{computeScale(cellsTTable.Width)}}">
 			<text  ng-repeat="elem in cellsTTable | limitTo:countVariable + 1 track by $index"fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] - 5}}">{{elem.variable}}</text>
 			<g ng-repeat="elem in cellsTTable track by $index" >
@@ -30,6 +66,7 @@
 		</div>
 	</div>
 </section>
+
 
 
 

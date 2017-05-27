@@ -18,7 +18,8 @@
     "angular": "^1.6.4",
     "angularfire": "^2.3.0",
     "angular-ui-router": "^1.0.3",
-    "normalize.less": "^1.0.0"
+    "normalize.less": "^1.0.0",
+    "angular-material": "^1.1.4"
   },
   "devDependencies": {
     "gojs": "^1.7.10"

@@ -42,8 +42,8 @@ var dataBase = {};
                for (var i = 0; i < result.rows.length; i++) {
                     arrayH.push(new User(result.rows.item(i)['name'], result.rows.item(i)['level']));
                 }
-                    console.log("length arrayH " + arrayH.length);
-            		console.log(result.rows.length);
+                    // console.log("length arrayH " + arrayH.length);
+            		// console.log(result.rows.length);
             		loadUser();
             }); 
         });
@@ -87,7 +87,7 @@ userInfoApp.controller("infoCtrl",function($scope){
     loadUser = function () {
         $scope.$apply(function () {
             $scope.userInfo = arrayH[0];
-            console.log("Watch");
+            // console.log("Watch");
         });
     };
 
