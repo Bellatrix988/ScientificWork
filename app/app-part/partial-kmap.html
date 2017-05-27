@@ -16,9 +16,9 @@
 				<text  fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] + 27}}">{{elem.value}}</text>
 				</g>
 			</svg> -->
-			<svg ng-attr-height="{{computeScale(cellsMap.Height) +20}}"  ng-attr-width="{{computeScale(cellsMap.Width) + 20}}">
+			<svg ng-attr-height="{{computeScale(cellsMap.Height) + 20}}"  ng-attr-width="{{computeScale(cellsMap.Width) + 20}}">
 			<text  ng-repeat="elem in cellsMap[0] track by $index" fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] -5}}">{{elem.variablesText.topSide}}</text>
-			<text  ng-repeat="elem in cellsMap[0] track by $index" fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[1] - 15}}" ng-attr-y="{{elem.position[0] +27}}">{{elem.variablesText.topSide}}</text>
+			<text  ng-repeat="row in cellsMap track by $index" fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{row[0].position[0] - 15}}" ng-attr-y="{{row[0].position[1] + 27}}">{{row[0].variablesText.leftSide}}</text>
 <!-- 			<path stroke-width="2" stroke="red" fill="none" d="M 208,80 L 212,80 M 210,80 L 210,160 M 208,160 L 212,160"></path>
 			<path stroke-width="2" stroke="red" fill="none" d="M 208,80 L 212,80 M 215,120 L 215,200 M 208,160 L 212,160"></path>
 			<path stroke-width="2" stroke="red" fill="none" d="M 80,208 L 80,212 M 80, 210 L 160,210 M 160,208 L 160,212"></path> -->

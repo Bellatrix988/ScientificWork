@@ -36,26 +36,28 @@ kmapApp.controller("tableKMap", function($scope,FormulaService){
 	}
 
 
+	$scope.countVariable = 2;
 
-	$scope.countVariable = 4;
-
-	$scope.changeSelectedItem = function(){
-		$scope.formula = getFormula($scope.countVariable, []); //"x1 && x2";
-		$scope.minFormula = getMinFormula($scope.cellsMap);
-	}
 
 	$scope.formula = getFormula($scope.countVariable, []); //"x1 && x2";
 	// $scope.minFormula = getMinFormula($scope.cellsMap);//"x1 && x2";//getFormula($scope.countVariable, []); FACTORY!
 
-	//получаем матрицу
-	var tTable = formulaToTruthTabl($scope.countVariable, $scope.formula);
-	//задали высоту и ширину ячеек
-	$scope.fieldScale = 40;
-  	$scope.cellsTTable = [];
-  	$scope.cellsMap = new Array();
-  	$scope.computeScale;
-	$scope.myinit = function(){
+	// //получаем матрицу
+	// var tTable = formulaToTruthTabl($scope.countVariable, $scope.formula);
+	// //задали высоту и ширину ячеек
+	// $scope.fieldScale = 40;
+ //  	$scope.cellsTTable = [];
+ //  	$scope.cellsMap = new Array();
+ //  	$scope.computeScale;
 
+	$scope.myinit = function(){
+		//получаем матрицу
+		var tTable = formulaToTruthTabl($scope.countVariable, $scope.formula);
+		//задали высоту и ширину ячеек
+		$scope.fieldScale = 40;
+	  	$scope.cellsTTable = [];
+	  	$scope.cellsMap = new Array();
+	  	$scope.computeScale;
 		var n = $scope.countVariable;
 		var c = Math.floor((n+1)/2);
 		var r = Math.floor(n/2);
@@ -111,13 +113,20 @@ kmapApp.controller("tableKMap", function($scope,FormulaService){
 	        field.variable = field.value?$scope.cellsTTable[ind].variables : "!"+$scope.cellsTTable[ind].variables;
 	        $scope.cellsMap[i].push(field);
 	        field.variablesText.leftSide = tTable[IndArr[j] + IndArr[i]* this.columnsMap].slice(0,r).join('');
-	        field.variablesText.topSide = tTable[IndArr[j] + IndArr[i]* this.columnsMap].slice(r,r + c).join('');
+	        field.variablesText.topSide = tTable[IndArr[j] + IndArr[i]* this.columnsMap].slice(r, r +c).join('');
 	        id++;
 	        ind = ind + $scope.countVariable + 1;
 	      }
 	    }
 	    $scope.minFormula = getMinFormula($scope.cellsMap);
 	}
+
+	$scope.changeSelectedItem = function(){
+		$scope.formula = getFormula($scope.countVariable, []); //"x1 && x2";
+		$scope.minFormula = getMinFormula($scope.cellsMap);
+		$scope.myinit();
+	}
+
 });
 
 kmapApp.service('FormulaService', getFormula);
