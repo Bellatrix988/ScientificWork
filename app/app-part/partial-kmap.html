@@ -12,7 +12,7 @@
 		</md-select> -->
 		<p>Начальная формула: {{formula}}</p>
 		<p>Минимизированная формула:<span ng-repeat="term in minFormula track by $index" ng-click="changeColor(term.ID, colors[term.ID]);myStyle={color:colors[term.ID]}" ng-style="myStyle"> {{term.value}} || </span> 
-		{{minFormula}}</p>
+		</p>
 <!-- 		<div ng-cloak>
 		  <md-content>
 		    <md-tabs md-dynamic-height md-border-bottom>
@@ -45,23 +45,22 @@
 		</div> -->
 
 		<div>
-
 			<!-- <svg ng-attr-height="{{computeScale(cellsTTable.Height)}}"  ng-attr-width="{{computeScale(cellsTTable.Width)}}">
-			<text  ng-repeat="elem in cellsTTable | limitTo:countVariable + 1 track by $index"fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] - 5}}">{{elem.variable}}</text>
-			<g ng-repeat="elem in cellsTTable track by $index" >
-				<rect  ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value?1:0"></rect>
-				<text  fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] + 27}}">{{elem.value}}</text>
+			<text  ng-repeat="elem in cellsTTable[0] track by $index"fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{computePosition($index) + 20}}" ng-attr-y="{{computePosition(0) - 5}}">{{elem.variable}}</text>
+			<g ng-repeat="row in cellsTTable track by $index" ng-init="rowIndex=$index">
+				<rect ng-repeat="elem in row track by $index" ng-attr-x="{{computePosition($index)}}" ng-attr-y="{{computePosition(rowIndex)}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value?1:0"></rect>
+				<text ng-repeat="elem in row track by $index" fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{computePosition($index) + 20}}" ng-attr-y="{{computePosition(rowIndex) + 27}}">{{elem.value}}</text>
 				</g>
 			</svg> -->
 			<svg ng-attr-height="{{computeScale(cellsMap.Height) + 20}}"  ng-attr-width="{{computeScale(cellsMap.Width) + 20}}">
-			<text  ng-repeat="elem in cellsMap[0] track by $index" fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] -5}}">{{elem.variablesText.topSide}}</text>
-			<text  ng-repeat="row in cellsMap track by $index" fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{row[0].position[0] - 15}}" ng-attr-y="{{row[0].position[1] + 27}}">{{row[0].variablesText.leftSide}}</text>
+			<text  ng-repeat="elem in cellsMap[0] track by $index" fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{computePosition($index) + 20}}" ng-attr-y="{{computePosition(0) -5}}">{{elem.variablesText.topSide}}</text>
+			<text  ng-repeat="row in cellsMap track by $index" fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{computePosition(0) - 15}}" ng-attr-y="{{computePosition($index) + 27}}">{{row[0].variablesText.leftSide}}</text>
 <!-- 			<path stroke-width="2" stroke="red" fill="none" d="M 208,80 L 212,80 M 210,80 L 210,160 M 208,160 L 212,160"></path>
 			<path stroke-width="2" stroke="red" fill="none" d="M 208,80 L 212,80 M 215,120 L 215,200 M 208,160 L 212,160"></path>
 			<path stroke-width="2" stroke="red" fill="none" d="M 80,208 L 80,212 M 80, 210 L 160,210 M 160,208 L 160,212"></path> -->
-				<g ng-repeat="row in cellsMap">
-					<rect ng-repeat="elem in row track by $index" ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value; changeValueInKMap()"></rect>
-					<text  ng-repeat="elem in row track by $index" ng-attr-fill="{{elem.color}}"" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] + 27}}">{{elem.value?1:0}}</text>
+				<g ng-repeat="row in cellsMap" ng-init="rowIndex=$index">
+					<rect ng-repeat="elem in row track by $index" ng-attr-x="{{computePosition($index)}}" ng-attr-y="{{computePosition(rowIndex)}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value; changeValueInKMap()"></rect>
+					<text  ng-repeat="elem in row track by $index" ng-attr-fill="{{elem.color}}"" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{computePosition($index) + 20}}" ng-attr-y="{{computePosition(rowIndex) + 27}}">{{elem.value?1:0}}</text>
 				</g>
 			</svg>
 		</div>

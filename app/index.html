@@ -20,6 +20,11 @@
   <link rel="stylesheet" type="text/css" href="css/nav_button.css">
   <link rel="stylesheet" type="text/css" href="css/user.css">
   <!-- <link rel="stylesheet" type="text/css" href="css/style.min.css"> --> 
+  <!-- подключаем стили Mocha, для отображения результатов -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.1.0/mocha.css">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.1.0/mocha.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/2.0.0/chai.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 <body>
@@ -34,7 +39,7 @@
     <ui-view></ui-view>
   </div>
 </section>
-
+<div id="mocha"></div>
 
 <!-- Scripts -->
   <script src="libs/angular/angular.min.js"></script>
@@ -50,6 +55,7 @@
   <script src="js/app.js"></script>
   <script type="text/javascript" src="js/minimization/kmapApp.js"></script>
   <script src="js/userInfo.js"></script>
+  <script type="text/javascript" src="js/minimization/test.js"></script>
      <!-- <script src="libs/go-1.7.9-debug.js"></script> -->
   <!-- <script src="../release/go.js"></script> -->
   
