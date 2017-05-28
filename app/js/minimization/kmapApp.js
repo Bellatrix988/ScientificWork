@@ -44,11 +44,11 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
     }
 
     //Количество переменных в формуле
-    $scope.countVariable = 3;
+    $scope.countVariable = 5;
 
     //Начальная сгенерированная формула
-    $scope.formula = '!x1 && x2 && !x3 || !x1 && x2 && x3 || x1 && !x2 && !x3 || x1 && x2 && !x3 || x1 && x2 && x3'//getFormula($scope.countVariable, []); //"x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//
-	$scope.colors = ['red','green','blue','yellow','red','green','blue','yellow','red','green','blue','yellow'];
+    $scope.formula =  '!x1 && !x2 && x3 && x5 || x1 && !x2 && !x4 && !x5 || !x1 && !x3 && x4 && !x5 || !x1 && !x2 && x4 && !x5 || !x1 && !x3 && !x4 && !x5 || x1 && x4 && x5'//getFormula($scope.countVariable, []); //"x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//
+	$scope.colors = ['darkred','darkorange','springgreen','olive','saddlebrown','darkcyan','midnightblue','darkviolet','mediumvioletred','green','blue','yellow'];
 
     //инициализирует основные элементы логики для связи с UI
     $scope.initFormUI = function() {
@@ -69,17 +69,12 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
 		$scope.computePosition = function(x) {
             return x * $scope.fieldScale + this.fieldBorder;
         }
+    	$scope.clearFild = function(){
+			$scope.cellsMap = buildKMap($scope.countVariable, tTable, true);
+			$scope.formula = "";
+			$scope.minFormula = "";
+		}
 
-        $scope.changeColor = function(id, color){
-			$scope.cellsMap.forEach(function(item){
-				item.forEach(function(itemIn){
-					if(itemIn.uniqueID == id)
-						itemIn.color = color;
-				})
-			})
-		};
-
-        
         $scope.cellsTTable = buildTTable($scope.countVariable, tTable);
         $scope.cellsMap = buildKMap($scope.countVariable, tTable);
         
@@ -97,6 +92,15 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
     $scope.changeValueInKMap = function(){
     	$scope.minFormula = getMinFormula($scope.cellsMap);
     }
+
+    $scope.changeColor = function(id, color){
+		$scope.cellsMap.forEach(function(item){
+			item.forEach(function(itemIn){
+				if(itemIn.uniqueID == id)
+					itemIn.color = color;
+			})
+		})
+	};
 });
 
 //Сервис для получени формул(случайной и минимизированной)
@@ -105,7 +109,7 @@ kmapApp.service('FormulaService', getFormula);
 ///###########Вспомогательные функции##############
 
 //Строит карту Карно по таблице истинности
-function buildKMap(countVars, tTable){
+function buildKMap(countVars, tTable, flag){
 	var IndArr = initIndexArr(countVars);
 
 	var cellsMap = new Array();
@@ -116,13 +120,15 @@ function buildKMap(countVars, tTable){
     //вычисляем размеры карты
     cellsMap.Width = Math.pow(2, c);
     cellsMap.Height = Math.pow(2, r);
-
     //Заполняем массив карты и ее поля для вывода в UI
     for (var i = 0; i < cellsMap.Height; i++) {
         cellsMap[i] = [];
         for (var j = 0; j < cellsMap.Width; j++) {
             var field = new Cell();
-            field.value = parseInt(tTable[IndArr[j] + IndArr[i] * cellsMap.Width][countVars]) == 1 ? true : false;
+    		if(flag)
+    			field.value = false;
+    		else
+            	field.value = parseInt(tTable[IndArr[j] + IndArr[i] * cellsMap.Width][countVars]) == 1 ? true : false;
             //field.uniqueID = ((j + 1) == this.columns) ? "f" : "x" + (j + 1);
             field.variablesText.leftSide = tTable[IndArr[j] + IndArr[i] * cellsMap.Width].slice(0, r).join('');
             field.variablesText.topSide = tTable[IndArr[j] + IndArr[i] * cellsMap.Width].slice(r, r + c).join('');
@@ -250,7 +256,7 @@ function initIndexArr(n) {
             break;
         case 5:
         case 6:
-            result = [0, 1, 3, 2, 4, 5, 7, 6];
+            result = [0, 1, 3, 2, 6, 7, 5, 4];
             break;
         case 7:
         case 8:
@@ -282,12 +288,12 @@ function toVariableText(variables){
 //Извлекает из карты проекцию контура
 function copyPartMap(contour, KMap){
 	var i = 0;
+	var kmWidth = contour.y < 4 ? (KMap.Width / contour.width) : KMap.Width;
 	var cellsInContours = [];
 	for(i = 0; i < contour.height; i++)
 		for (var j = 0; j < contour.width; j++){
-			cellsInContours = cellsInContours.concat(KMap[(contour.x + i) % KMap.Height][(contour.y + j) % KMap.Width]);
+			cellsInContours = cellsInContours.concat(KMap[(contour.x + i) % KMap.Height][(contour.y + j) % kmWidth]);
 		}
-		//cellsInContours = cellsInContours.concat(KMap[(contour.x + i) % KMap.Height].slice(contour.y, contour.y + contour.width));
 	return cellsInContours;
 }
 
@@ -374,9 +380,12 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
 
         //Возвращает true, если все значения в контуре равны образцу(0 или 1)
         function isFullEqSample(Contour, sample) {
+    		var width = Contour.y < 4? (KMap.Width / Contour.width) : KMap.Width;
             for (let i = 0; i < Contour.height; i++)
                 for (let j = 0; j < Contour.width; j++) {
-                    let Test = KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % KMap.Width].value;
+                    let Test = KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % width].value;
+                    // if(Test != sample)
+                    // 	Test = KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % 4].value;
                     if (!Compare(sample, Test))
                         return false;
                 }
@@ -385,9 +394,10 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
 
         //Возвращает false, если хотя бы один элемен из контура не помечен
         function isCovered(Contour) {
+    		var width = Contour.y < 4? (KMap.Width / Contour.width) : KMap.Width;
             for (let i = 0; i < Contour.height; i++)
                 for (let j = 0; j < Contour.width; j++)
-                    if (!KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % KMap.Width].covered)
+                    if (!KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % width].covered)
                         return false;
             return true;
         }
@@ -395,9 +405,10 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
         //Помечает все элементы контура значением isCovered
         function Cover(Contour, isCovered) {
         	var i,j;
+    		var width = Contour.y < 4? (KMap.Width / Contour.width) : KMap.Width;
             for (i = 0; i < Contour.height; i++)
                 for (j = 0; j < Contour.width; j++)
-                    KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % KMap.Width].covered = isCovered;
+                    KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % width].covered = isCovered;
         }
 
         function SearchContour(widthCont, heightCont, sample, ResultCont, DoCover) {
@@ -407,9 +418,24 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
             var i,j;
             var loopOfColumns = (KMap.Width == widthCont) ? 1 : KMap.Width;
             var loopOfRows = (KMap.Height == heightCont) ? 1 : KMap.Height;
+            	if(KMap.Width > 4)
+            		loopOfColumns = KMap.Width / widthCont;
             for (i = 0; i < loopOfRows; i++) {
                 for (j = 0; j < loopOfColumns; j++) {
                     var Contour = createContour(i, j, widthCont, heightCont);
+                    // if(((Contour.y % 4) + Contour.width) > 5)
+                    // 	break;
+                    if (isFullEqSample(Contour, sample)) {
+                        if (!isCovered(Contour)) {
+                        	Contour.ID = ResultCont.length + 1;
+                            ResultCont.push(Contour);
+                            if (DoCover) Cover(Contour, true);
+                        }
+                    }
+                }
+
+                for(var k = loopOfColumns; k < KMap.Width; k++){
+                	var Contour = createContour(i, k, widthCont, heightCont);
                     if (isFullEqSample(Contour, sample)) {
                         if (!isCovered(Contour)) {
                         	Contour.ID = ResultCont.length + 1;
@@ -425,15 +451,16 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
             var Contours = new Array();
             Cover(createContour(0, 0, KMap.Width, KMap.Height), false);
 
-            // Find the (larger) Contourangles that cover just the quares in the KMap
-            //  and search for smaller and smaller Contours
-            for(var row = KMap.Height; row > 0; row--)
-            	for(var column = KMap.Width; column > 0; column--){
-            		if(isPowerOfTwo(column * row)){
-            			SearchContour(row, column, true, Contours, true);
-            			SearchContour(column, row, true, Contours, true);
-            		}
-            	}
+            SearchContour(4, 4, true, Contours, true);
+            SearchContour(4, 2, true, Contours, true);
+            SearchContour(2, 4, true, Contours, true);
+            SearchContour(4, 1, true, Contours, true);
+            SearchContour(1, 4, true, Contours, true);
+            SearchContour(2, 2, true, Contours, true);
+            SearchContour(2, 1, true, Contours, true);
+            SearchContour(1, 2, true, Contours, true);
+            SearchContour(1, 1, true, Contours, true);
+            	
             return Contours;
         }
 

@@ -13,6 +13,7 @@
 		<p>Начальная формула: {{formula}}</p>
 		<p>Минимизированная формула:<span ng-repeat="term in minFormula track by $index" ng-click="changeColor(term.ID, colors[term.ID]);myStyle={color:colors[term.ID]}" ng-style="myStyle"> {{term.value}} || </span> 
 		</p>
+		<button ng-click="clearFild()">Clear</button>
 <!-- 		<div ng-cloak>
 		  <md-content>
 		    <md-tabs md-dynamic-height md-border-bottom>
@@ -59,8 +60,8 @@
 			<path stroke-width="2" stroke="red" fill="none" d="M 208,80 L 212,80 M 215,120 L 215,200 M 208,160 L 212,160"></path>
 			<path stroke-width="2" stroke="red" fill="none" d="M 80,208 L 80,212 M 80, 210 L 160,210 M 160,208 L 160,212"></path> -->
 				<g ng-repeat="row in cellsMap" ng-init="rowIndex=$index">
-					<rect ng-repeat="elem in row track by $index" ng-attr-x="{{computePosition($index)}}" ng-attr-y="{{computePosition(rowIndex)}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value; changeValueInKMap()"></rect>
-					<text  ng-repeat="elem in row track by $index" ng-attr-fill="{{elem.color}}"" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{computePosition($index) + 20}}" ng-attr-y="{{computePosition(rowIndex) + 27}}">{{elem.value?1:0}}</text>
+					<rect ng-repeat="elem in row track by $index" ng-attr-x="{{computePosition($index)}}" ng-attr-y="{{computePosition(rowIndex)}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}"  ng-attr-fill="{{elem.color}}" stroke="#000" ng-click="elem.value = !elem.value; changeValueInKMap()"></rect>
+					<text  ng-repeat="elem in row track by $index"  fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{computePosition($index) + 20}}" ng-attr-y="{{computePosition(rowIndex) + 27}}">{{elem.value?1:0}}</text>
 				</g>
 			</svg>
 		</div>
