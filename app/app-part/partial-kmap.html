@@ -60,7 +60,7 @@
 			<path stroke-width="2" stroke="red" fill="none" d="M 208,80 L 212,80 M 215,120 L 215,200 M 208,160 L 212,160"></path>
 			<path stroke-width="2" stroke="red" fill="none" d="M 80,208 L 80,212 M 80, 210 L 160,210 M 160,208 L 160,212"></path> -->
 				<g ng-repeat="row in cellsMap">
-					<rect ng-repeat="elem in row track by $index" ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value?1:0"></rect>
+					<rect ng-repeat="elem in row track by $index" ng-attr-x="{{elem.position[0]}}" ng-attr-y="{{elem.position[1]}}" ng-attr-height="{{fieldScale}}" ng-attr-width="{{fieldScale}}" fill="#fff" stroke="#000" ng-click="elem.value = !elem.value; changeValueInKMap()"></rect>
 					<text  ng-repeat="elem in row track by $index" ng-attr-fill="{{elem.color}}"" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{elem.position[0] + 20}}" ng-attr-y="{{elem.position[1] + 27}}">{{elem.value?1:0}}</text>
 				</g>
 			</svg>

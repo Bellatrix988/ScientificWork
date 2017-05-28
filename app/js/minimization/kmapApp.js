@@ -44,7 +44,7 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
     }
 
     //Количество переменных в формуле
-    $scope.countVariable = 4;
+    $scope.countVariable = 2;
 
     //Начальная сгенерированная формула
     $scope.formula = getFormula($scope.countVariable, []); //"x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//
@@ -139,7 +139,9 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
         $scope.initFormUI();
     }
 
-
+    $scope.changeValueInKMap = function(){
+    	$scope.minFormula = getMinFormula($scope.cellsMap);
+    }
 
 });
 
@@ -210,9 +212,9 @@ function getFormula() {
 
         //Возвращает true, если все значения в контуре равны образцу(0 или 1)
         function isFullEqSample(Contour, sample) {
-            for (let i = 0; i < Contour.width; i++)
-                for (let j = 0; j < Contour.height; j++) {
-                    let Test = KMap[(Contour.x + i) % KMap.Width][(Contour.y + j) % KMap.Height].value;
+            for (let i = 0; i < Contour.height; i++)
+                for (let j = 0; j < Contour.width; j++) {
+                    let Test = KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % KMap.Width].value;
                     if (!Compare(sample, Test))
                         return false;
                 }
@@ -221,20 +223,20 @@ function getFormula() {
 
         //Возвращает false, если хотя бы один элемен из контура не помечен
         function isCovered(Contour) {
-            for (let i = 0; i < Contour.width; i++)
-                for (let j = 0; j < Contour.height; j++)
-                    if (!KMap[(Contour.x + i) % KMap.Width][(Contour.y + j) % KMap.Height].covered)
+            for (let i = 0; i < Contour.height; i++)
+                for (let j = 0; j < Contour.width; j++)
+                    if (!KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % KMap.Width].covered)
                         return false;
             return true;
         }
 
         //Помечает все элементы контура значением isCovered
         function Cover(Contour, isCovered) {
-            for (i = 0; i < Contour.width; i++)
-                for (j = 0; j < Contour.height; j++)
-                    KMap[(Contour.x + i) % KMap.Width][(Contour.y + j) % KMap.Height].covered = isCovered;
+        	var i,j;
+            for (i = 0; i < Contour.height; i++)
+                for (j = 0; j < Contour.width; j++)
+                    KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % KMap.Width].covered = isCovered;
         }
-
 
         function SearchContour(widthCont, heightCont, sample, ResultCont, DoCover) {
             if ((widthCont > KMap.Width) || (heightCont > KMap.Height)) {
@@ -243,8 +245,8 @@ function getFormula() {
             var i,j;
             var loopOfColumns = (KMap.Width == widthCont) ? 1 : KMap.Width;
             var loopOfRows = (KMap.Height == heightCont) ? 1 : KMap.Height;
-            for (i = 0; i < loopOfColumns; i++) {
-                for (j = 0; j < loopOfRows; j++) {
+            for (i = 0; i < loopOfRows; i++) {
+                for (j = 0; j < loopOfColumns; j++) {
                     var Contour = createContour(i, j, widthCont, heightCont);
                     if (isFullEqSample(Contour, sample)) {
                         if (!isCovered(Contour)) {
@@ -263,52 +265,14 @@ function getFormula() {
 
             // Find the (larger) Contourangles that cover just the quares in the KMap
             //  and search for smaller and smaller Contours
-            // SearchContour(4, 4, true, Contours, true);
-            // SearchContour(4, 2, true, Contours, true);
-            // SearchContour(2, 4, true, Contours, true);
-            SearchContour(1, 4, true, Contours, true);
-            SearchContour(4, 1, true, Contours, true);
-            // SearchContour(2, 2, true, Contours, true);
-
-            // 2x1 sized Contours  - These have to be handled specially in order to find a 
-            //  minimized solution.  
-            var Contours2x1 = new Array();
-            // SearchContour(2, 1, true, Contours2x1, false);
-            // SearchContour(1, 2, true, Contours2x1, false);
-            //FindBestCoverage(Contours2x1, Contours);
-
-            // add the 1x1 Contours
-            SearchContour(1, 1, true, Contours, true);
-
+            for(var row = KMap.Height; row > 0; row--)
+            	for(var column = KMap.Width; column > 0; column--){
+            		if(isPowerOfTwo(column * row)){
+            			SearchContour(row, column, true, Contours, true);
+            			SearchContour(column, row, true, Contours, true);
+            		}
+            	}
             return Contours;
-            //check to see if any sets of (necessary) smaller Contours fully cover larger ones (if so, the larger one is no longer needed)
-            //    Cover(createContour(0, 0, KMap.Width, KMap.Height), false);
-            //    for (i = Contours.length - 1; i >= 0; i--)
-            //    {
-            //        if (isCovered(Contours[i]))
-            //        {
-            //            Contours[i] = null;
-            //        }
-            //        else
-            //        {
-            //            Cover(Contours[i], true);
-            //        }
-            //    }
-
-            // ClearEquation();	
-            // for (i=0;i<Contours.length; i++)
-            // {
-            // 	if (Contours[i]!=null)
-            // 	{
-            // 		ContourToEquation(Contours[i]);
-            // 	}
-            // }
-            // if (Equation.UsedLength==0)
-            // {
-            // 	Equation.UsedLength=1;
-            // 	Equation[0].Expression="0";
-            // 	Equation[0].Contour = createContour(0,0,KMap.Width,KMap.Height);
-            // }
         }
 
         function getResultExpr(contours){
@@ -405,16 +369,18 @@ function toVariableText(variables){
 }
 
 //Извлекает из карты проекцию контура
-function copyPartMap(current, KMap){
+function copyPartMap(contour, KMap){
 	var i = 0;
 	var cellsInContours = [];
-	if(current.width > current.height)
-		return KMap[current.y % KMap.Height].slice(current.x, current.width + current.x);
-	for(i = 0; i < current.height; i++){
-		temp = KMap[(current.y + i) % KMap.Width].slice(current.x, current.width + current.x);
-		console.log("expr part", temp);
-		cellsInContours.push(temp[0]);
-	}
+	for(i = 0; i < contour.height; i++)
+		cellsInContours = cellsInContours.concat(KMap[(contour.x + i) % KMap.Height].slice(contour.y, contour.y + contour.width));
+	// if(current.width > current.height)
+	// 	return KMap[current.y % KMap.Height].slice(current.x, current.width + current.x);
+	// for(i = 0; i < current.height; i++){
+	// 	temp = KMap[(current.y + i) % KMap.Width].slice(current.x, current.width + current.x);
+	// 	console.log("expr part", temp);
+	// 	cellsInContours.push(temp[0]);
+	// }
 	return cellsInContours;
 }
 
