@@ -44,10 +44,10 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
     }
 
     //Количество переменных в формуле
-    $scope.countVariable = 2;
+    $scope.countVariable = 3;
 
     //Начальная сгенерированная формула
-    $scope.formula = getFormula($scope.countVariable, []); //"x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//
+    $scope.formula = '!x1 && x2 && !x3 || !x1 && x2 && x3 || x1 && !x2 && !x3 || x1 && x2 && !x3 || x1 && x2 && x3'//getFormula($scope.countVariable, []); //"x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//
 	$scope.colors = ['red','green','blue','yellow','red','green','blue','yellow','red','green','blue','yellow'];
 
     //инициализирует основные элементы логики для связи с UI
@@ -84,7 +84,7 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
         $scope.cellsMap = buildKMap($scope.countVariable, tTable);
         
         //вызываем функцию минимизации после того, как заполнили массив карты
-        $scope.minFormula = getMinFormulaFrom($scope.countVariable, $scope.formula);//getMinFormula($scope.cellsMap);
+        $scope.minFormula = getMinFormula($scope.cellsMap);
     }
  
     //Вызывается при изменении количетва переменных. Обновляются формулы и UI
@@ -156,7 +156,11 @@ function buildTTable(countVars, tTable){
 function getMinFormulaFrom(countVars, formula){
     var tTable = formulaToTruthTabl(countVars, formula);
     var km = buildKMap(countVars, tTable);
-    return getMin(km);
+    var res = [];
+    getMin(km).forEach(function(item){
+    	res.push(item.value);
+    })
+    return res.join(' || ');
 
 }
 
@@ -280,7 +284,10 @@ function copyPartMap(contour, KMap){
 	var i = 0;
 	var cellsInContours = [];
 	for(i = 0; i < contour.height; i++)
-		cellsInContours = cellsInContours.concat(KMap[(contour.x + i) % KMap.Height].slice(contour.y, contour.y + contour.width));
+		for (var j = 0; j < contour.width; j++){
+			cellsInContours = cellsInContours.concat(KMap[(contour.x + i) % KMap.Height][(contour.y + j) % KMap.Width]);
+		}
+		//cellsInContours = cellsInContours.concat(KMap[(contour.x + i) % KMap.Height].slice(contour.y, contour.y + contour.width));
 	return cellsInContours;
 }
 
