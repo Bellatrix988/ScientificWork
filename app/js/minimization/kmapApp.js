@@ -47,7 +47,7 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
     $scope.countVariable = 5;
 
     //Начальная сгенерированная формула
-    $scope.formula =  '!x1 && !x2 && x3 && x5 || x1 && !x2 && !x4 && !x5 || !x1 && !x3 && x4 && !x5 || !x1 && !x2 && x4 && !x5 || !x1 && !x3 && !x4 && !x5 || x1 && x4 && x5'//getFormula($scope.countVariable, []); //"x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//
+    $scope.formula = '!x1 && !x2 && x3 && x5 || x1 && !x2 && !x4 && !x5 || !x1 && !x3 && x4 && !x5 || !x1 && !x2 && x4 && !x5 || !x1 && !x3 && !x4 && !x5 || x1 && x4 && x5'//getFormula($scope.countVariable, []); //"x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//
 	$scope.colors = ['darkred','darkorange','springgreen','olive','saddlebrown','darkcyan','midnightblue','darkviolet','mediumvioletred','green','blue','yellow'];
 
     //инициализирует основные элементы логики для связи с UI
@@ -286,13 +286,15 @@ function toVariableText(variables){
 }
 
 //Извлекает из карты проекцию контура
-function copyPartMap(contour, KMap){
-	var i = 0;
-	var kmWidth = contour.y < 4 ? (KMap.Width / contour.width) : KMap.Width;
+function copyPartMap(Contour, KMap){
+	var kmWidth = setWidth(KMap.Width, Contour.y);
+	var k = 0;
 	var cellsInContours = [];
-	for(i = 0; i < contour.height; i++)
-		for (var j = 0; j < contour.width; j++){
-			cellsInContours = cellsInContours.concat(KMap[(contour.x + i) % KMap.Height][(contour.y + j) % kmWidth]);
+	for(var i = 0; i < Contour.height; i++)
+		for (var j = 0; j < Contour.width; j++){
+			if(KMap.Width > 4)
+           		k = setCoeff(j, Contour, KMap.Width);
+			cellsInContours = cellsInContours.concat(KMap[(Contour.x + i) % KMap.Height][(Contour.y + j + k) % kmWidth]);
 		}
 	return cellsInContours;
 }
@@ -380,12 +382,13 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
 
         //Возвращает true, если все значения в контуре равны образцу(0 или 1)
         function isFullEqSample(Contour, sample) {
-    		var width = Contour.y < 4? (KMap.Width / Contour.width) : KMap.Width;
-            for (let i = 0; i < Contour.height; i++)
-                for (let j = 0; j < Contour.width; j++) {
-                    let Test = KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % width].value;
-                    // if(Test != sample)
-                    // 	Test = KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % 4].value;
+    		var kmWidth = setWidth(KMap.Width, Contour.y);
+    		var k = 0;
+            for (var i = 0; i < Contour.height; i++)
+                for (var j = 0; j < Contour.width; j++) {
+                	if(KMap.Width > 4)
+                		k = setCoeff(j, Contour, KMap.Width);
+                    let Test = KMap[(Contour.x + i) % KMap.Height][((Contour.y + j + k) % kmWidth)].value;
                     if (!Compare(sample, Test))
                         return false;
                 }
@@ -394,32 +397,39 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
 
         //Возвращает false, если хотя бы один элемен из контура не помечен
         function isCovered(Contour) {
-    		var width = Contour.y < 4? (KMap.Width / Contour.width) : KMap.Width;
-            for (let i = 0; i < Contour.height; i++)
-                for (let j = 0; j < Contour.width; j++)
-                    if (!KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % width].covered)
+    		var kmWidth = setWidth(KMap.Width, Contour.y);
+    		var k = 0;
+            for (var i = 0; i < Contour.height; i++)
+                for (var j = 0; j < Contour.width; j++){
+    				if(KMap.Width > 4)
+           				k = setCoeff(j, Contour, KMap.Width);
+                    if (!KMap[(Contour.x + i) % KMap.Height][(Contour.y + j + k) % kmWidth].covered)
                         return false;
+                }
             return true;
         }
 
         //Помечает все элементы контура значением isCovered
         function Cover(Contour, isCovered) {
-        	var i,j;
-    		var width = Contour.y < 4? (KMap.Width / Contour.width) : KMap.Width;
-            for (i = 0; i < Contour.height; i++)
-                for (j = 0; j < Contour.width; j++)
-                    KMap[(Contour.x + i) % KMap.Height][(Contour.y + j) % width].covered = isCovered;
+    		var kmWidth = setWidth(KMap.Width, Contour.y);
+    		var k = 0;
+            for (var i = 0; i < Contour.height; i++)
+                for (var j = 0; j < Contour.width; j++){
+    				if(KMap.Width > 4)
+           				k = setCoeff(j, Contour, KMap.Width);
+                    KMap[(Contour.x + i) % KMap.Height][(Contour.y + j + k) % kmWidth].covered = isCovered;
+                }
         }
 
-        function SearchContour(widthCont, heightCont, sample, ResultCont, DoCover) {
+        function searchContour(widthCont, heightCont, sample, ResultCont, DoCover) {
             if ((widthCont > KMap.Width) || (heightCont > KMap.Height)) {
                 return; 
-            }
             var i,j;
+            }
             var loopOfColumns = (KMap.Width == widthCont) ? 1 : KMap.Width;
             var loopOfRows = (KMap.Height == heightCont) ? 1 : KMap.Height;
-            	if(KMap.Width > 4)
-            		loopOfColumns = KMap.Width / widthCont;
+            	// if(KMap.Width > 4)
+            	// 	loopOfColumns = KMap.Width / widthCont;
             for (i = 0; i < loopOfRows; i++) {
                 for (j = 0; j < loopOfColumns; j++) {
                     var Contour = createContour(i, j, widthCont, heightCont);
@@ -434,33 +444,30 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
                     }
                 }
 
-                for(var k = loopOfColumns; k < KMap.Width; k++){
-                	var Contour = createContour(i, k, widthCont, heightCont);
-                    if (isFullEqSample(Contour, sample)) {
-                        if (!isCovered(Contour)) {
-                        	Contour.ID = ResultCont.length + 1;
-                            ResultCont.push(Contour);
-                            if (DoCover) Cover(Contour, true);
-                        }
-                    }
-                }
+                // for(var k = loopOfColumns; k < KMap.Width; k++){
+                // 	var Contour = createContour(i, k, widthCont, heightCont);
+                //     if (isFullEqSample(Contour, sample)) {
+                //         if (!isCovered(Contour)) {
+                //         	Contour.ID = ResultCont.length + 1;
+                //             ResultCont.push(Contour);
+                //             if (DoCover) Cover(Contour, true);
+                //         }
+                //     }
+                // }
             }
         }
 
-        function Search() {
+        function search() {
             var Contours = new Array();
             Cover(createContour(0, 0, KMap.Width, KMap.Height), false);
 
-            SearchContour(4, 4, true, Contours, true);
-            SearchContour(4, 2, true, Contours, true);
-            SearchContour(2, 4, true, Contours, true);
-            SearchContour(4, 1, true, Contours, true);
-            SearchContour(1, 4, true, Contours, true);
-            SearchContour(2, 2, true, Contours, true);
-            SearchContour(2, 1, true, Contours, true);
-            SearchContour(1, 2, true, Contours, true);
-            SearchContour(1, 1, true, Contours, true);
-            	
+            for(var row = KMap.Width; row > 0; row--)
+             	for(var column = KMap.Height; column > 0; column--){
+             		if(isPowerOfTwo(column * row)){
+          				searchContour(row, column, true, Contours, true);
+            			searchContour(column, row, true, Contours, true);
+            		}
+            	}
             return Contours;
         }
 
@@ -478,10 +485,20 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
 
 
         function MinFormula() {
-            var result = Search();
-            console.log("result Search Count", result.length);
+            var result = search();
+            console.log("result search Count", result.length);
             console.log("result arr[0]: ", result);
             return getResultExpr(result);
         }
         return MinFormula();
     }
+
+
+function setWidth(width, y){
+	var kmWidth = width; 
+	if(width > 4)
+	 	kmWidth = (y < 4) ? 4 : width;
+	 return kmWidth;
+}
+
+setCoeff = (j,contour, KMWidth) => (j >= (contour.width / 2)) ? ((KMWidth - 1 - contour.y) * 2) : 0;

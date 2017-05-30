@@ -25,4 +25,4 @@ describe("test", function() {
 
 });
 
-// mocha.run();
+mocha.run();
