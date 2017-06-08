@@ -1,12 +1,47 @@
-<section class="container">
-	<div class="buildFormula" ng-controller="formController" ng-init="setupGrammar()">
-		<h4>Зададим функцию: </h4>
-		<span>Введите количество переменных:</span>
-		<input type="number" min="1" max="8" ng-model="countVariable"/>
-		<button id="generate" ng-click="generateFormula(2,['0.7','0.6','0.6','0.7','1','0','0'])">Generate</button>
-		<h4>Результат:</h4>
-		<div ng-repeat="item in list track by $index"><span>{{item}}<br></span><br></div>
+<!-- <section class="container"> -->
+<div ng-controller="AppCtrl as appCtrl" ng-cloak>
+  <md-grid-list
+  		class="gridListdemoBasicUsage"
+        md-cols-xs="4" md-cols-sm="6" md-cols-md="5" md-cols-gt-md="6"
+        md-row-height-gt-md="1:1" md-row-height="1:1"
+        md-gutter="5px" md-gutter-gt-sm="8px" >
 
-		<div style="background: #00f00f;" id="res"></div>
-	</div>
-</section>
+    <md-grid-tile class="gray" ng-click="showAdvanced($event)">
+      <md-grid-tile-footer>
+        <h3>AND</h3>
+      </md-grid-tile-footer>
+    </md-grid-tile>
+
+    <md-grid-tile class="green">
+      <md-grid-tile-footer>
+        <h3>OR</h3>
+      </md-grid-tile-footer>
+    </md-grid-tile>
+
+    <md-grid-tile class="yellow">
+      <md-grid-tile-footer>
+        <h3>NOT</h3>
+      </md-grid-tile-footer>
+    </md-grid-tile>
+
+    <md-grid-tile class="blue">
+      <md-grid-tile-footer>
+        <h3>XOR</h3>
+      </md-grid-tile-footer>
+    </md-grid-tile>
+
+    <md-grid-tile class="red">
+      <md-grid-tile-footer>
+        <h3>NOR</h3>
+      </md-grid-tile-footer>
+    </md-grid-tile>
+
+    <md-grid-tile class="green">
+      <md-grid-tile-footer>
+        <h3>NAND</h3>
+      </md-grid-tile-footer>
+    </md-grid-tile>
+
+  </md-grid-list>
+</div>
+<!-- </section> -->

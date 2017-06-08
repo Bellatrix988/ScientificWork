@@ -2,7 +2,7 @@
 function Cell() {
     this.position = [0.0, 0.0];
     this.value = false;
-    this.color = "#000";
+    this.color = "#fff";
     this.uniqueID = -1; //для связи с выражением
     this.truthmapID = -1;	//для связи с таблицей истинности
     this.variablesText = {
@@ -19,16 +19,6 @@ function Term(){
 }
 var kmapApp = angular.module("kmapApp", ['ngMaterial']);
 
-//Позволяет инициализировать массив с нужными числами
-kmapApp.filter('range', function() {
-    return function(input, min, max) {
-        min = parseInt(min); //Make string input int
-        max = parseInt(max);
-        for (var i = min; i < max; i++)
-            input.push(i);
-        return input;
-    };
-});
 
 //Контроллер для связи логики и представления карты Карно и ТИ
 kmapApp.controller("tableKMap", function($scope, FormulaService) {
@@ -45,7 +35,6 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
 
     //Количество переменных в формуле
     $scope.countVariable = 5;
-
     //Начальная сгенерированная формула
     $scope.formula = '!x1 && !x2 && x3 && x5 || x1 && !x2 && !x4 && !x5 || !x1 && !x3 && x4 && !x5 || !x1 && !x2 && x4 && !x5 || !x1 && !x3 && !x4 && !x5 || x1 && x4 && x5'//getFormula($scope.countVariable, []); //"x1 && ! x2 || ( x1 || ! x2 && ! x1 ) && x2";//
 	$scope.colors = ['darkred','darkorange','springgreen','olive','saddlebrown','darkcyan','midnightblue','darkviolet','mediumvioletred','green','blue','yellow'];
@@ -55,11 +44,11 @@ kmapApp.controller("tableKMap", function($scope, FormulaService) {
         //получаем матрицу
         var tTable = formulaToTruthTabl($scope.countVariable, $scope.formula);
         //задали высоту и ширину ячеек
-        $scope.fieldScale = 40;
+        $scope.fieldScale = 30;
         $scope.cellsTTable = new Array();
         $scope.cellsMap = new Array();
 
-        this.fieldBorder = Math.floor(($scope.countVariable + 1) / 2) * 20;
+        this.fieldBorder = Math.floor(($scope.countVariable + 1) / 2) * 15;
 
         //вычисление высоты и ширины svg
         $scope.computeScale = function(x) {
@@ -172,44 +161,8 @@ function getMinFormulaFrom(countVars, formula){
 
 ///!!!Генерирует одно и то же. Нужно изменить. Да и вероятность убрать - она тут не нужна
 function getFormula() {
-    //заполнение грамматики
-    setupGrammar = function(countVariable, prob) {
-        cfree = new ContextFree();
-        var probares = ['1', '1', '1', '1', '1', '1', '1'];
-        if (prob)
-            probares = prob;
-        //заполняем переменными
-        var variables = [];
-        for (i = 1; i <= countVariable; i++)
-            variables[i - 1] = "x" + i.toString();
-
-        //при повышении уровня будут добавляться
-        var operationsPriorityFirst = ['&&'];
-        var operationsPrioritySecond = ['||'];
-        var not = '!';
-
-        for (var j = 0; j < operationsPrioritySecond.length; j++)
-            cfree.addRule('E', ['T', operationsPrioritySecond[j], 'T'], probares[0]);
-        cfree.addRule('E', ['T'], probares[1]);
-
-        for (var j = 0; j < operationsPriorityFirst.length; j++)
-            cfree.addRule('T', ['F', operationsPriorityFirst[j], 'F'], probares[2]);
-        cfree.addRule('T', ['F'], probares[3]);
-        // cfree.addRule('T', [ 'not','T'], 0.8);
-
-
-        // cfree.addRule('F', [ not,'F'], probares[4]);
-        // cfree.addRule('F', [ not,'(','E', ')']);
-        cfree.addRule('F', ['(', 'E', ')'], probares[5]);
-
-        //добовляем переменные 
-        for (var i = 0; i < variables.length; i++) {
-            cfree.addRule('F', [variables[i]], probares[6]);
-            //cfree.addRule('F', [not, variables[i]], probares[6]);
-        }
-    }
     this.generateFormula = function(countVariable, probares) {
-        setupGrammar(countVariable, probares);
+        generateGrammar(countVariable, probares);
         return cfree.getExpression('E');
     }
     this.getMinFormula = function(KMap) {
@@ -287,22 +240,26 @@ function toVariableText(variables){
 
 //Извлекает из карты проекцию контура
 function copyPartMap(Contour, KMap){
+	var kmHeight = setWidth(KMap.Height, Contour.x);
 	var kmWidth = setWidth(KMap.Width, Contour.y);
-	var k = 0;
+	var k = 0, p = 0;
 	var cellsInContours = [];
-	for(var i = 0; i < Contour.height; i++)
+	for(var i = 0; i < Contour.height; i++){
+		if(KMap.Height > 4)
+    		p = setCoeffX(i,Contour, KMap.Height);
 		for (var j = 0; j < Contour.width; j++){
 			if(KMap.Width > 4)
-           		k = setCoeff(j, Contour, KMap.Width);
-			cellsInContours = cellsInContours.concat(KMap[(Contour.x + i) % KMap.Height][(Contour.y + j + k) % kmWidth]);
+           		k = setCoeffY(j, Contour, KMap.Width);
+			cellsInContours = cellsInContours.concat(KMap[(Contour.x + i + p) % kmHeight][(Contour.y + j + k) % kmWidth]);
 		}
+	}
 	return cellsInContours;
 }
 
 //Преобразует контур в соответствующее ему выражение
 function bondingVars(contour, KMap){
 
-	var resultExpression = "";
+	var resultExpression = [];
 	var resWidth = [];//["11","11","11","11"]//[];
 	var resHeight = [];//["00","01","11","10"]//[];
 	let term = new Term();
@@ -336,8 +293,8 @@ function bondingVars(contour, KMap){
 		for(var k = 0; k < res.length; k++){
 			if(res[k] != 'x'){
 				let temp = item.variable.split(' ');
-				resultExpression = resultExpression.includes(temp[k]) ? 
-					resultExpression : resultExpression + temp[k];
+				resultExpression = resultExpression.includes(temp[k]) ?
+                    resultExpression : (resultExpression. length == 0? temp[k] : resultExpression + ' && ' + temp[k]);
 			}
 		}
 	})
@@ -382,43 +339,55 @@ const unionArrays = (a, b) => Array.from(new Set([...a, ...b]));
 
         //Возвращает true, если все значения в контуре равны образцу(0 или 1)
         function isFullEqSample(Contour, sample) {
+    		var kmHeight = setWidth(KMap.Height, Contour.x);
     		var kmWidth = setWidth(KMap.Width, Contour.y);
-    		var k = 0;
-            for (var i = 0; i < Contour.height; i++)
+    		var k = 0, p = 0;
+            for (var i = 0; i < Contour.height; i++){
+            	if(KMap.Height > 4)
+            		p = setCoeffX(i,Contour, KMap.Height);
                 for (var j = 0; j < Contour.width; j++) {
                 	if(KMap.Width > 4)
-                		k = setCoeff(j, Contour, KMap.Width);
-                    let Test = KMap[(Contour.x + i) % KMap.Height][((Contour.y + j + k) % kmWidth)].value;
+                		k = setCoeffY(j, Contour, KMap.Width);
+                    let Test = KMap[(Contour.x + i + p) % kmHeight][((Contour.y + j + k) % kmWidth)].value;
                     if (!Compare(sample, Test))
                         return false;
                 }
+            }
             return true;
         }
 
         //Возвращает false, если хотя бы один элемен из контура не помечен
         function isCovered(Contour) {
     		var kmWidth = setWidth(KMap.Width, Contour.y);
-    		var k = 0;
-            for (var i = 0; i < Contour.height; i++)
+    		var kmHeight = setWidth(KMap.Height, Contour.x);
+    		var k = 0, p = 0;;
+            for (var i = 0; i < Contour.height; i++){
+            	if(KMap.Height > 4)
+            		p = setCoeffX(i,Contour, KMap.Height);
                 for (var j = 0; j < Contour.width; j++){
     				if(KMap.Width > 4)
-           				k = setCoeff(j, Contour, KMap.Width);
-                    if (!KMap[(Contour.x + i) % KMap.Height][(Contour.y + j + k) % kmWidth].covered)
+           				k = setCoeffY(j, Contour, KMap.Width);
+                    if (!KMap[(Contour.x + i + p) % kmHeight][(Contour.y + j + k) % kmWidth].covered)
                         return false;
                 }
+            }
             return true;
         }
 
         //Помечает все элементы контура значением isCovered
         function Cover(Contour, isCovered) {
     		var kmWidth = setWidth(KMap.Width, Contour.y);
-    		var k = 0;
-            for (var i = 0; i < Contour.height; i++)
+    		var kmHeight = setWidth(KMap.Height, Contour.x);
+    		var k = 0, p = 0;
+            for (var i = 0; i < Contour.height; i++){
+            	if(KMap.Height > 4)
+            		p = setCoeffX(i,Contour, KMap.Height);
                 for (var j = 0; j < Contour.width; j++){
     				if(KMap.Width > 4)
-           				k = setCoeff(j, Contour, KMap.Width);
-                    KMap[(Contour.x + i) % KMap.Height][(Contour.y + j + k) % kmWidth].covered = isCovered;
+           				k = setCoeffY(j, Contour, KMap.Width);
+                    KMap[(Contour.x + i  + p) % kmHeight][(Contour.y + j + k) % kmWidth].covered = isCovered;
                 }
+            }
         }
 
         function searchContour(widthCont, heightCont, sample, ResultCont, DoCover) {
@@ -501,4 +470,10 @@ function setWidth(width, y){
 	 return kmWidth;
 }
 
-setCoeff = (j,contour, KMWidth) => (j >= (contour.width / 2)) ? ((KMWidth - 1 - contour.y) * 2) : 0;
+setCoeffY = (j,contour, KMWidth) => (j >= (contour.width / 2)) ? ((KMWidth - 1 - contour.y) * 2) : 0;
+setCoeffX = (i,contour, KMWidth) => (i >= (contour.height / 2)) ? ((KMWidth - 1 - contour.x) * 2) : 0;
+
+
+String.prototype.replaceAll = function(c,r){
+    return this.split(c).join(r);
+}

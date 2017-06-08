@@ -11,7 +11,8 @@
         <li><a href="https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%D0%9A%D1%83%D0%B0%D0%B9%D0%BD%D0%B0_%E2%80%94_%D0%9C%D0%B0%D0%BA-%D0%9A%D0%BB%D0%B0%D1%81%D0%BA%D0%B8">Метод Куайна — Мак-Класки</a></li>
         <li><a href="http://s1.fksis.ru/ml/%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D1%8F/content/theme2/subtheme3/subtheme3.htm">Метод импликантных матриц.</a></li>
         <li>Метод испытания импликант</li>
-  </ol> -->
+</ol> -->
+
   <link rel="stylesheet" type="text/css" href="libs/normalize.css">
   <link rel="stylesheet" type="text/css" href="libs/angular-material/angular-material.css">
   <link rel="stylesheet" type="text/css" href="css/index.css">
@@ -19,7 +20,10 @@
   <link rel="stylesheet" type="text/css" href="css/header.css">
   <link rel="stylesheet" type="text/css" href="css/nav_button.css">
   <link rel="stylesheet" type="text/css" href="css/user.css">
-  <!-- <link rel="stylesheet" type="text/css" href="css/style.min.css"> --> 
+  <link rel="stylesheet" type="text/css" href="css/KMap.css">
+  <link rel="stylesheet" type="text/css" href="css/grid.css">
+  <!-- <link rel="stylesheet" type="text/css" href="css/style.min.css">  -->
+
   <!-- подключаем стили Mocha, для отображения результатов -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.1.0/mocha.css">
   
@@ -29,9 +33,9 @@
 </head>
 <body>
 <section id="head" ng-app="headerApp">
-  <header class="header__container" ng-app="userInfoApp" ng-controller="infoCtrl">
-    <div class="arrow_back" ui-sref="home"><img src="img/arrow-left.svg" width="30px"></div>
-    <div class="infoUser" ng-click="openPopUp()"><span ng-click="update()">{{userInfo.name}} <img src="img/star.svg" width="30px">{{userInfo.level}}</span></div>
+  <header class="header__container" >
+    <div class="arrow_back" onclick="history.back()" data-ng-hide="$state.includes('home')"><img src="img/arrow-left.svg" width="30px"></div>
+    <div class="infoUser" ng-app="userInfoApp" ng-controller="infoCtrl" ng-click="openPopUp()"><span ng-click="update()">{{userInfo.name}} <img src="img/star.svg" width="30px">{{userInfo.level}}</span></div>
     <pop-up-msg></pop-up-msg>
   </header>
 
@@ -49,12 +53,14 @@
   <script src="libs/angular-material/angular-material.js"></script>
   <!-- <script src="libs/gojs/release/go-debug.js"></script> -->
   <!-- <script src="js/diagram.js"></script> -->
-  <script src="js/userInfo.js"></script>
-  <script type="text/javascript" src="js/build formula/contextFreeGrammar.js"></script>
-  <script type="text/javascript" src="js/buildFormula.js"></script>
   <script src="js/app.js"></script>
-  <script type="text/javascript" src="js/minimization/kmapApp.js"></script>
+  <script src="js/routing.js"></script>
   <script src="js/userInfo.js"></script>
+  <script src="js/viewDesign.js"></script>
+  <script type="text/javascript" src="js/build shema/circuit.js"></script>
+  <script type="text/javascript" src="js/build formula/contextFreeGrammar.js"></script>
+    <script type="text/javascript" src="js/minimization/kmapApp.js"></script>
+  <script type="text/javascript" src="js/build formula/buildFormula.js"></script>
   <script type="text/javascript" src="js/minimization/test.js"></script>
      <!-- <script src="libs/go-1.7.9-debug.js"></script> -->
   <!-- <script src="../release/go.js"></script> -->

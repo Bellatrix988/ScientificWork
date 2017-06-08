@@ -1,3 +1,9 @@
+<div ng-app="exprApp" class="buildFormula" ng-controller="buildCtrl" ng-init="generateFormula(5,['0.7','0.6','0.8','0.7','0.6','1','0.9'])">
+    <h1>Level 2</h1>
+    <div ng-repeat="item in list track by $index" ><span>{{item}}<br></span> <span>Min: {{Min}}</span>
+   <br></div>
+</div>
+
 <!-- <!DOCTYPE html>
 <html>
 <head>
@@ -359,7 +365,3 @@
 </html>
  -->
 
-<div ng-app="exprApp" class="buildFormula" ng-controller="buildCtrl" ng-init="generateFormula(2,['0.7','0.6','0.6','0.7','1','0','0'])">
-    <h1>Level 2</h1>
-    <div ng-repeat="item in list track by $index"><span>{{item}}<br></span><br></div>
-  </div>

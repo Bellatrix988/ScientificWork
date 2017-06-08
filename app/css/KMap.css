@@ -1,3 +1,5 @@
-rect:hover {
-  background-color: rgba(0, 100, 0, 0.5);
+.kmap {
+  height: 100%;
+  background-color: #fff;
+  color: black;
 }

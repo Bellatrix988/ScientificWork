@@ -113,22 +113,39 @@ ContextFree.prototype.addRule = function(rule, expansion, weight) {
 // }
 
 // Рекурсивно вызывает себя, пока не достигнет терминала
-ContextFree.prototype.expand = function(start, expression) {
+ContextFree.prototype.expand = function(start, expression, tree) {
   if (this.rules.hasOwnProperty(start)) { 
     // Выбираем продукции по заданному нетерминалу
     var products = this.rules[start];
     var picked = products.choice();
+
+    if(tree._root.typeOp == start){
+      if(picked.length == 3)
+        tree.addRuleObj(picked[1],picked[0],picked[2]); 
+      if(picked.length == 1)
+          tree.updateTypeOp(picked[0]);
+     }
+
     for (var i = 0; i < picked.length; i++) {
-      this.expand(picked[i], expression);
+        if(picked.length == 3 && i == 0)
+          this.expand(picked[i], expression, tree._root.input1);
+        else if(picked.length == 3 && i == 2)
+          this.expand(picked[i], expression, tree._root.input2);
+        else
+          this.expand(picked[i], expression, tree);
+//      this.expand(picked[i], expression);
     }
-  } else {
+  } else { 
     expression.push(start);
   }
 }
 
 ContextFree.prototype.getExpression = function(axiom) {
+    var tree = new Gate();
+    tree.add(axiom);
     var expression = [];
-    this.expand(axiom, expression);
+    this.expand(axiom, expression, tree);
+    console.log('Res tree:', tree);
     // возвращаем строку
     return expression.join(' ');
 }
