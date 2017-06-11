@@ -1,4 +1,4 @@
-var headerApp = angular.module('headerApp',['kmapApp','exprApp','routingApp','userInfoApp','designApp','svgGate']);
+var headerApp = angular.module('headerApp',['kmapApp','exprApp','routingApp','userInfoApp','designApp']);
 
 //Позволяет инициализировать массив с нужными числами
 headerApp.filter('range', function() {

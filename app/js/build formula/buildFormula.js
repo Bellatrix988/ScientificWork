@@ -78,13 +78,12 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
     })
   }
 
-  $scope.changeValue = function(){
-       // console.log('found val', $scope.nodesArr.reverse()[0].input.getOut());
-       $scope.nodesArr.forEach(function(item){
+//вызывается при клике на входыне сигналы
+$scope.changeValue = function(){
+  $scope.nodesArr.forEach(function(item){
         if(item instanceof outCell){
           // item.input.getElemByID()
           item.value = item.input.value;
-          // item.color = item.input.color;
         } else{
           if(item.input1 != null && item.input1 != null){
             item.value = eval(item.input1.value + item.typeOp + item.input2.value);
@@ -96,11 +95,8 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
 
 
        });
-    console.log('nodesArr changeValue',$scope.nodesArr);
-
-       //item.value = eval(item.input1.value + item.typeOp + item.input2.value);
+       console.log('nodesArr changeValue',$scope.nodesArr);
   }
-
 });
 
 //сохраняем уникальность форумул
@@ -154,11 +150,7 @@ function setScoresVariables(countVariable){
   return variables;
 }
 
-function hasNumbers(t)
-{
-  var regex = /\d/g;
-  return regex.test(t);
-}
+
 //заполнение грамматики
 function generateGrammar(countVariable, prob){
   cfree = new ContextFree();
@@ -194,9 +186,8 @@ function generateGrammar(countVariable, prob){
         }
 }
 
-// angular.bootstrap
-// (document.getElementByClassName("buildFormula"),["exprApp"]);
 
+////для сортировки массива объектов по заданному полю
 // sort on values
 function srt(desc) {
   return function(a,b){
@@ -211,10 +202,3 @@ function keysrt(key,desc) {
   }
 }
 
-function getElemByID(list, id){
-    for (var i = 0; i < list.length; i++) {
-        if (list[i].id === id) {
-            return list[i];
-        }
-    }
-}
