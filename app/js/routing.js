@@ -30,8 +30,7 @@ routingApp.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: '/app-part/level.html',
             controller: 'changeLvl',
             params: {
-                level: 0,
-                // countVariable: 0,
+                level: 10,
                 probares: []
             }
         })

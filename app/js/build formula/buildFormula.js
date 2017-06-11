@@ -23,12 +23,61 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
   $scope.Min;
   $scope.probares;
   $scope.list = [];
+  $scope.tree = new Node();
+  $scope.nodesArr;
+  $scope.widthSVG;
+  $scope.heightSVG;
 
   $scope.initLoad = function(){
     setupCountVars($scope.level);
     setupGrammar($scope.countVariable, $scope.probares);
-    $scope.list.addExpression(cfree.getExpression('E'));
+    $scope.list.addExpression(cfree.getExpression('E',$scope.tree));
     $scope.Min = (getMinFormulaFrom($scope.countVariable,$scope.list[0]));
+    $scope.nodesArr = initTreeNodes($scope.tree);
+    drawCircuit($scope.nodesArr.sort(keysrt('id')).sort(keysrt('layer')).reverse());
+    console.log('nodesArr',$scope.nodesArr);
+  }
+
+  function drawCircuit(arr){
+    var maxlvl = arr[0].layer;
+    var border = 20;
+    $scope.lenPath = 20;
+    $scope.widthCell = 30;
+    $scope.widthSVG = 0;
+    // $scope.heightSVG = 0;
+    arr.forEach(function(item, index){
+      let lvl = maxlvl - item.layer;
+      let borderHeight = (border + $scope.widthCell) * item.layerCount;
+      let dist = ($scope.lenPath + $scope.widthCell + border);
+      if(index == arr.length - 1)
+        {
+          $scope.widthSVG = index * dist + border;
+          $scope.heightSVG = maxlvl * borderHeight;
+          // item.position[1] =  $scope.heightSVG / 2;
+        }
+      var xChild, yChild;
+      xChild = 0; 
+      yChild = 0;
+      if(item.input1 != null && item.input1 != null){
+          if(item.input1.position[0] == 0){
+            item.input1.position = getElemByID($scope.nodesArr, item.id).position;
+          }
+          if(item.input2.position[0] == 0){
+            item.input2.position = getElemByID($scope.nodesArr, item.id).position;
+          }
+          let in1 = Math.max(item.input1.position[1],item.input2.position[1]);
+          let in2 = Math.min(item.input1.position[1],item.input2.position[1]);
+          xChild = 0;
+          yChild = in2 + ((in1 - in2) / 2 - ($scope.widthCell / 2));
+      }
+
+      item.position[0] = xChild + border + lvl * dist;
+      item.position[1] = yChild + border + borderHeight;
+    })
+  }
+
+  $scope.changeValue = function(){
+       console.log('found val', $scope.nodesArr.reverse()[0].input.getOut());
   }
 
 });
@@ -77,6 +126,18 @@ function initGrammar(){
   }
 }
 
+function setScoresVariables(countVariable){
+   var variables = [];
+      for(i = 1; i <= countVariable; i++)
+        variables[i - 1] = "x" + i.toString();
+  return variables;
+}
+
+function hasNumbers(t)
+{
+  var regex = /\d/g;
+  return regex.test(t);
+}
 //заполнение грамматики
 function generateGrammar(countVariable, prob){
   cfree = new ContextFree();
@@ -84,9 +145,7 @@ function generateGrammar(countVariable, prob){
     if(prob)
       probares = prob;
     //заполняем переменными
-    var variables = [];
-      for(i = 1; i <= countVariable; i++)
-        variables[i - 1] = "x" + i.toString();
+    var variables = setScoresVariables(countVariable);
 
         //при повышении уровня будут добавляться
         var operationsPriorityFirst = ['&&'];
@@ -117,3 +176,24 @@ function generateGrammar(countVariable, prob){
 // angular.bootstrap
 // (document.getElementByClassName("buildFormula"),["exprApp"]);
 
+// sort on values
+function srt(desc) {
+  return function(a,b){
+   return desc ? ~~(a < b) : ~~(a > b);
+  };
+}
+
+// sort on key values
+function keysrt(key,desc) {
+  return function(a,b){
+   return desc ? ~~(a[key] < b[key]) : ~~(a[key] > b[key]);
+  }
+}
+
+function getElemByID(list, id){
+    for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) {
+            return list[i];
+        }
+    }
+}

@@ -119,7 +119,7 @@ ContextFree.prototype.expand = function(start, expression, tree) {
     var products = this.rules[start];
     var picked = products.choice();
 
-    if(tree._root.typeOp == start){
+    if(tree != undefined && tree.typeOp == start){
       if(picked.length == 3)
         tree.addRuleObj(picked[1],picked[0],picked[2]); 
       if(picked.length == 1)
@@ -127,25 +127,31 @@ ContextFree.prototype.expand = function(start, expression, tree) {
      }
 
     for (var i = 0; i < picked.length; i++) {
+      if(tree == undefined)
+        this.expand(picked[i], expression);
+      else{
         if(picked.length == 3 && i == 0)
-          this.expand(picked[i], expression, tree._root.input1);
+          this.expand(picked[i], expression, tree.input1);
         else if(picked.length == 3 && i == 2)
-          this.expand(picked[i], expression, tree._root.input2);
+          this.expand(picked[i], expression, tree.input2);
         else
           this.expand(picked[i], expression, tree);
-//      this.expand(picked[i], expression);
+        }
     }
   } else { 
     expression.push(start);
   }
 }
 
-ContextFree.prototype.getExpression = function(axiom) {
-    var tree = new Gate();
+ContextFree.prototype.getExpression = function(axiom, tree) {
+  var expression = [];
+  if(tree == undefined)
+    this.expand(axiom, expression);
+  else{
     tree.add(axiom);
-    var expression = [];
     this.expand(axiom, expression, tree);
-    console.log('Res tree:', tree);
+    // console.log('Res tree:', tree.getLayer1(0), tree.getLayer2(0));
+  }
     // возвращаем строку
     return expression.join(' ');
 }
