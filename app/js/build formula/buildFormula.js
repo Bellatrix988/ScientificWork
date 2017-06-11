@@ -34,8 +34,9 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
     $scope.list.addExpression(cfree.getExpression('E',$scope.tree));
     $scope.Min = (getMinFormulaFrom($scope.countVariable,$scope.list[0]));
     $scope.nodesArr = initTreeNodes($scope.tree);
-    drawCircuit($scope.nodesArr.sort(keysrt('id')).sort(keysrt('layer')).reverse());
-    console.log('nodesArr',$scope.nodesArr);
+    $scope.nodesArr = $scope.nodesArr.sort(keysrt('id')).sort(keysrt('layer')).reverse();
+    drawCircuit($scope.nodesArr);
+    console.log('nodesArr',$scope.nodesArr[0] instanceof outCell,);
   }
 
   function drawCircuit(arr){
@@ -59,6 +60,7 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
       xChild = 0; 
       yChild = 0;
       if(item.input1 != null && item.input1 != null){
+        item.value = eval(item.input1.value + item.typeOp + item.input2.value);
           if(item.input1.position[0] == 0){
             item.input1.position = getElemByID($scope.nodesArr, item.id).position;
           }
@@ -77,7 +79,26 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
   }
 
   $scope.changeValue = function(){
-       console.log('found val', $scope.nodesArr.reverse()[0].input.getOut());
+       // console.log('found val', $scope.nodesArr.reverse()[0].input.getOut());
+       $scope.nodesArr.forEach(function(item){
+        if(item instanceof outCell){
+          // item.input.getElemByID()
+          item.value = item.input.value;
+          // item.color = item.input.color;
+        } else{
+          if(item.input1 != null && item.input1 != null){
+            item.value = eval(item.input1.value + item.typeOp + item.input2.value);
+          } 
+  
+        }
+        
+        item.color = item.value ? "green" : "orange";
+
+
+       });
+    console.log('nodesArr changeValue',$scope.nodesArr);
+
+       //item.value = eval(item.input1.value + item.typeOp + item.input2.value);
   }
 
 });
