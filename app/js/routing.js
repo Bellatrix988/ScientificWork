@@ -6,7 +6,6 @@ routingApp.run(function ($state, $rootScope) {
 
 routingApp.controller('changeLvl', function($stateParams, $scope){
     $scope.level = $stateParams.level;
-    // $scope.countVariable = $stateParams.countVariable;
     $scope.probares = $stateParams.probares;
 })
 

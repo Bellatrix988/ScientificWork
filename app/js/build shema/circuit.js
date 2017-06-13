@@ -1,17 +1,3 @@
-// function ConverterOperations(op){
-// 	switch(op){
-// 		case 'and':
-// 			return '&&';
-// 			break;
-// 		case 'or':
-// 			return '||';
-// 			break;
-// 		case 'xor':
-// 			return '^'
-// 			break;
-
-// 	}
-// }
 
 //Объект 
 var gate = {

@@ -32,20 +32,20 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
     setupCountVars($scope.level);
     setupGrammar($scope.countVariable, $scope.probares);
     $scope.list.addExpression(cfree.getExpression('E',$scope.tree));
-    $scope.Min = (getMinFormulaFrom($scope.countVariable,$scope.list[0]));
+    // $scope.Min = (getMinFormulaFrom($scope.countVariable,$scope.list[0]));
     $scope.nodesArr = initTreeNodes($scope.tree);
     $scope.nodesArr = $scope.nodesArr.sort(keysrt('id')).sort(keysrt('layer')).reverse();
     drawCircuit($scope.nodesArr);
     console.log('nodesArr',$scope.nodesArr[0] instanceof outCell,);
   }
 
-  function drawCircuit(arr){
+//Заполняет поля объектов массива для вывода
+function drawCircuit(arr){
     var maxlvl = arr[0].layer;
     var border = 20;
     $scope.lenPath = 20;
     $scope.widthCell = 30;
     $scope.widthSVG = 0;
-    // $scope.heightSVG = 0;
     arr.forEach(function(item, index){
       let lvl = maxlvl - item.layer;
       let borderHeight = (border + $scope.widthCell) * item.layerCount;
@@ -54,13 +54,13 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
         {
           $scope.widthSVG = index * dist + border;
           $scope.heightSVG = maxlvl * borderHeight;
-          // item.position[1] =  $scope.heightSVG / 2;
         }
       var xChild, yChild;
       xChild = 0; 
       yChild = 0;
       if(item.input1 != null && item.input1 != null){
-        item.value = eval(item.input1.value + item.typeOp + item.input2.value);
+        item.value = eval(getOut(item.typeOp,item.input1.value,item.input2.value));
+        // item.value = eval(item.input1.value + item.typeOp + item.input2.value);
           if(item.input1.position[0] == 0){
             item.input1.position = getElemByID($scope.nodesArr, item.id).position;
           }
@@ -76,7 +76,7 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
       item.position[0] = xChild + border + lvl * dist;
       item.position[1] = yChild + border + borderHeight;
     })
-  }
+}
 
 //вызывается при клике на входыне сигналы
 $scope.changeValue = function(){
@@ -86,7 +86,8 @@ $scope.changeValue = function(){
           item.value = item.input.value;
         } else{
           if(item.input1 != null && item.input1 != null){
-            item.value = eval(item.input1.value + item.typeOp + item.input2.value);
+            item.value =  eval(getOut(item.typeOp,item.input1.value,item.input2.value));
+            // item.value =  eval(item.input1.value + item.typeOp + item.input2.value);
           } 
   
         }
@@ -117,8 +118,8 @@ function initGrammar(){
         variables[i - 1] = "x" + i.toString();
 
         //при повышении уровня будут добавляться
-        var operationsPriorityFirst = ['&&'];
-        var operationsPrioritySecond = ['||'];
+        var operationsPriorityFirst = ['and'];
+        var operationsPrioritySecond = ['or','xor'];
         var not = '!';
 
         for(var j = 0; j < operationsPrioritySecond.length; j++)
@@ -202,3 +203,25 @@ function keysrt(key,desc) {
   }
 }
 
+function getOut(op, in1, in2){
+  switch(op){
+    case 'not':
+      return '! ' + in1;
+      break;
+    case 'and':
+      return in1 + ' && ' + in2;
+      break;
+    case 'or':
+      return in1 + ' || ' + in2;
+      break;
+    case 'xor':
+      return in1 + ' ^ ' + in2;
+      break;
+    case 'nand':
+      return '! (' + getOut('and', in1, in2) + ')';
+      break;
+    case 'nor':
+      return '! (' + getOut('or', in1, in2) + ')';
+      break;
+  }
+};
