@@ -1,0 +1,6 @@
+<!-- <svg x="0" y="0" width="30" height="30" viewBox="0, 0, 100, 100">
+  <path d="M0.5,0.5 L49.875,0.5 C77.144,0.5 99.25,22.606 99.25,49.875 C99.25,77.144 77.144,99.25 49.875,99.25 L0.5,99.25 L0.5,0.5" fill="#FFFFFF" stroke="#4C4C4C" stroke-width="2"/>
+</svg> -->
+<!-- <svg ng-attr-x="{{item.position[0]}}" ng-attr-y="{{item.position[1]}}" ng-attr-width = "{{widthCell}}" ng-attr-height= "{{widthCell}}"  viewBox="0, 0, 100, 100"> -->
+  <path d="M0.5,0.5 L49.875,0.5 C77.144,0.5 99.25,22.606 99.25,49.875 C99.25,77.144 77.144,99.25 49.875,99.25 L0.5,99.25 L0.5,0.5" ng-attr-fill="{{item.color}}" stroke="#4C4C4C" stroke-width="2"/>
+<!-- </svg> -->

@@ -38,13 +38,17 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
     drawCircuit($scope.nodesArr);
     console.log('nodesArr',$scope.nodesArr[0] instanceof outCell,);
   }
+$scope.getPathGate = function(typeOp){
+  return 'img/gates/' + typeOp + '.svg';
+}
 
+$scope.pathGate = 'img/gates/and.svg';
 //Заполняет поля объектов массива для вывода
 function drawCircuit(arr){
     var maxlvl = arr[0].layer;
     var border = 20;
-    $scope.lenPath = 20;
-    $scope.widthCell = 30;
+    $scope.lenPath = 40;
+    $scope.widthCell = 50;
     $scope.widthSVG = 0;
     arr.forEach(function(item, index){
       let lvl = maxlvl - item.layer;

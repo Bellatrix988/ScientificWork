@@ -5,10 +5,12 @@
 		<!-- <span>Min: {{Min}}</span><br> -->
 	</div>
 <div>
+
 	<svg ng-attr-height="{{widthSVG / 2}}" ng-attr-width="{{widthSVG}}">
-		
 			<g ng-repeat="item in nodesArr" ng-click="item.value = !item.value; changeValue()">
-			<rect ng-attr-width = "{{widthCell}}" ng-attr-height= "{{widthCell}}" ng-attr-fill="{{item.color}}" font-family="sans-serif" text-anchor="middle" ng-attr-x="{{item.position[0]}}" ng-attr-y="{{item.position[1]}}"></rect>
+			<gate tyg="and"></gate>
+			
+			<!-- <rect ng-attr-width = "{{widthCell}}" ng-attr-height= "{{widthCell}}" ng-attr-fill="{{item.color}}" font-family="sans-serif" text-anchor="middle" ng-attr-x="{{item.position[0]}}" ng-attr-y="{{item.position[1]}}"></rect> -->
 			<text  fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="15" ng-attr-x="{{item.position[0] + 15}}" ng-attr-y="{{item.position[1] + 20}}" >{{item.typeOp}}</text>	
 			<line ng-attr-stroke="{{item.color}}" ng-attr-x1="{{item.position[0] + widthCell}}" ng-attr-y1="{{item.position[1] + (widthCell / 2)}}" ng-attr-x2="{{item.position[0] + widthCell + lenPath}}" ng-attr-y2="{{item.position[1] + widthCell / 2}}" style="stroke-width:2" />
 			</g>

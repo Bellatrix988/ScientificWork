@@ -6,7 +6,7 @@ angular
     	.accentPalette('orange')
 	})
 	.controller('AppCtrl', function($scope, $mdDialog) {
- 		var typeOper = 'meow';
+ 		var typeOper = '';
 		$scope.status = '  ';
   		$scope.customFullscreen = false;
   		changeTypeOp = function(typeOp){
