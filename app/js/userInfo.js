@@ -3,6 +3,13 @@ var User = function(name, level){
 	this.level = level;
 }
 
+User.prototype.incLevel = function(){
+    var lvl = this.level + 1;
+    dataBase.transaction(function (tx) {
+            tx.executeSql("UPDATE dbUser SET level = ? where id = ?", [lvl, 1]);
+        });
+    this.level = lvl;
+}
 var arrayH = [];
 var dataBase = {};
 //window.onload = function () {
@@ -20,7 +27,7 @@ var dataBase = {};
     createTable = function () {
         dataBase.transaction(function (tx) {
             tx.executeSql("CREATE TABLE IF NOT EXISTS dbUser (id integer primary key, name TEXT , level INTEGER)", []);
-    		tx.executeSql("INSERT INTO dbUser (id, name, level) VALUES (?,?,?)", [1,"Genius","0"], null,null);
+    		tx.executeSql("INSERT INTO dbUser (id, name, level) VALUES (?,?,?)", [1,"Genius","1"], null,null);
             // tx.executeSql("IF NOT EXISTS(SELECT * FROM dbUser WHERE name = ?) INSERT INTO dbUser (name, level) VALUES (?,?)", ["Genius","Genius","0"], null,null);
         });
     };
@@ -34,7 +41,7 @@ var dataBase = {};
 
      	funcError = function(){
      		dataBase.transaction(function (tx) {
-	    		tx.executeSql("INSERT INTO dbUser (name, level) VALUES (?,?)", ["Genius","0"], null,null);
+	    		tx.executeSql("INSERT INTO dbUser (name, level) VALUES (?,?)", ["Genius","1"], null,null);
 			});
      	}
         dataBase.transaction(function (tx) {

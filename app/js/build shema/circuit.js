@@ -1,4 +1,3 @@
-
 //Объект 
 var gate = {
 	typeOp: '',
@@ -20,18 +19,25 @@ Node.prototype = {
 		this.typeOp = n;
 	},
 	add: function(typeOp){
-		this.typeOp = typeOp;
-		this.input1 = new Node();
-		this.input2 = new Node();
+        if(typeOp != null){
+    		this.typeOp = typeOp;
+    		this.input1 = new Node();
+    		this.input2 = new Node();
+        }
 	},
 	updateTypeOp: function(typeOp){
 		if(this.typeOp != null)
 			this.typeOp = typeOp;
 	},
 	addRuleObj: function(typeOp, in1, in2){
-		this.typeOp = typeOp;
-		this.input1.add(in1);
-		this.input2.add(in2);
+        if (typeOp != null){
+		  this.typeOp = typeOp;
+		  this.input1.add(in1);
+          if(in2 == null)
+            this.input2 = null;
+          else
+		    this.input2.add(in2);
+        }
 	},
 	getLayer1: function(n){
 		if(this.input1 == null)
@@ -60,7 +66,9 @@ function GateUI(){
     this.value = false; //this.getOut();
     this.color = this.value ? "green" : "orange"; //or orange
     this.layer = 0;
+    this.gateType;
     this.layerCount = -1; //используется для отслеживания кол-ва узлов на одном уровне
+    this.arrayOfPosPath = [];
 }
 
 //методы
@@ -71,16 +79,12 @@ GateUI.prototype.constructor = GateUI;
 GateUI.prototype.add = function(typeOp){
     this.typeOp = typeOp;
     this.input1 = new GateUI();
-    this.input2 = new GateUI();
+    if(typeOp == 'not')
+        this.input2 = null;
+    else
+        this.input2 = new GateUI();
+    this.gateType = typeOp;
 }
-// GateUI.prototype.getOut = function(){
-//     if(hasNumbers(this.typeOp))
-//         return false;
-//     else{
-//         return eval(this.input1.getOut() + this.typeOp + this.input2.getOut());
-//     }
-// }
-
 //Находит среди всего объекта(включая потомки) элемент по id. 
 //Если не найдено - undefined
 GateUI.prototype.getById = function(id){
@@ -99,6 +103,7 @@ GateUI.prototype.getById = function(id){
 GateUI.prototype.addVariable = function(nameVariable){
     Node.prototype.addVariable.apply(this, arguments);
     this.id = nameVariable;
+    this.gateType = 'in';
 }
 
 //Переопределяет Node в GateUI, инициализируя новые поля
@@ -106,16 +111,18 @@ GateUI.prototype.overrideOvj = function(obj){
     if(obj == null)
         return;
     if(obj.typeOp != ''){
-        if(hasNumbers(obj.typeOp))
+        if(hasNumbers(obj.typeOp)){
             this.addVariable(obj.typeOp);
+        }
         else
             this.add(obj.typeOp);
     } else
         return;
 
-    while(this.input1 != null && this.input2 != null){
+    while(this.input1 != null){
         this.input1.overrideOvj(obj.input1);
-        this.input2.overrideOvj(obj.input2);
+        if(this.input2 != null)
+            this.input2.overrideOvj(obj.input2);
         return;
     }
 }
@@ -125,6 +132,7 @@ GateUI.prototype.overrideOvj = function(obj){
 function outCell(obj){
     this.input = obj;
     this.position = [0,0];
+    this.gateType = 'out';
     this.id = 'out';
     this.value = false;
     this.color = this.value ? "green" : "orange"; //or orange
@@ -199,12 +207,6 @@ function getElemByID(list, id){
 //Проверяет, содержит ли массив заданный объект(проверка по id)
 function containsObject(obj, list) {
     return getElemByID(list, obj.id) != undefined;
-    // for (var i = 0; i < list.length; i++) {
-    //     if (list[i].id === obj.id) {
-    //         return true;
-    //     }
-    // }
-    // return false;
 }
 
 //Проверяет, содержит ли заданная строка в себе число

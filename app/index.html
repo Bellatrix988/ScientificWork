@@ -33,9 +33,12 @@
 </head>
 <body>
 <section id="head" ng-app="headerApp">
-  <header class="header__container" >
+  <header ng-controller="infoCtrl" class="header__container" >
     <div class="arrow_back" onclick="history.back()" data-ng-hide="$state.includes('home')"><img src="img/arrow-left.svg" width="30px"></div>
-    <div class="infoUser" ng-app="userInfoApp" ng-controller="infoCtrl" ng-click="openPopUp()"><span ng-click="update()">{{userInfo.name}} <img src="img/star.svg" width="30px">{{userInfo.level}}</span></div>
+    <div class="infoUser">
+    <div ng-click="openPopUp()"><span ng-click="update()">{{userInfo.name}} 
+      <img src="img/star.svg" width="30px">{{userInfo.level}}</span>
+    </div></div>
     <pop-up-msg></pop-up-msg>
   </header>
 

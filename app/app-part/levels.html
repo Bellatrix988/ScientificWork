@@ -1,11 +1,5 @@
 <section class="container">
-<div class="levels">
-	<button  ng-repeat="lvl in [] | range:1:31" class="btn" ui-sref="level({level: lvl, probares: ['0.7','0.6','0.7','0.7','0','0','0.9']})">{{lvl}}<br><img src="img/star.svg" width="20px"> <img src="img/star.svg" width="20px"> <img src="img/star.svg" width="20px"></button>
+<div class="levels" ng-controller="infoCtrl">
+	<button  ng-repeat="lvl in [] | range:1:31" class="btn" ui-sref="level({level: lvl, probares: ['0.7','0.6','0.6','0.7','0','0','0.9']})" ng-disabled="lvl > (userInfo.level + 1)">{{lvl}}<br><img src="img/star.svg" width="20px" > <img src="img/star.svg" width="20px" > <img src="img/star.svg" width="20px"></button>
 </div>
-
-<!-- <div class="levels">
-	<button class="btn" ui-sref="level({level: 1, countVariable: 2, probares: ['0.7','0.6','0.6','0.7','0','0','1']})">level 1</button>
-	<button class="btn" ui-sref="level({level: 2, countVariable: 5, probares: ['0.6','0.7','0.7','0.6','0','0','1']})">level 2</button>
-<button class="btn" ui-sref="level" ng-click="generateFormula(5,['0.7','0.6','0.8','0.7','0.6','1','0.9'])">level 2 <br><img src="img/star.svg" width="20px"> <img src="img/star.svg" width="20px"> <img src="img/star.svg" width="20px"></button>
-</div> -->
 </section>

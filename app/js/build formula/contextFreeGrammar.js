@@ -41,6 +41,8 @@ Array.prototype.choice = function(){
   if(curVal.length > 0)
   {
     var deleted = curVal.splice(curVal.indexOf(result),1);
+    // if(hasNumbers(result))
+    //   curKey = 0.1;
     addNodeinRules(this, curKey-0.1, deleted[0]); 
     if (curVal.length == 0)
       this.splice(this.indexOf(current),1);
@@ -124,17 +126,23 @@ ContextFree.prototype.expand = function(start, expression, tree) {
         tree.addRuleObj(picked[1],picked[0],picked[2]); 
       if(picked.length == 1)
           tree.updateTypeOp(picked[0]);
+      if(picked.length == 2)
+        tree.addRuleObj(picked[0], picked[1], null); 
+          
      }
 
     for (var i = 0; i < picked.length; i++) {
       if(tree == undefined)
         this.expand(picked[i], expression);
       else{
-        if(picked.length == 3 && i == 0)
+        if((picked.length == 3 ) && i == 0)
           this.expand(picked[i], expression, tree.input1);
         else if(picked.length == 3 && i == 2)
           this.expand(picked[i], expression, tree.input2);
         else
+          if(picked.length == 2 && i == 1)
+            this.expand(picked[i],expression, tree.input1);
+          else
           this.expand(picked[i], expression, tree);
         }
     }

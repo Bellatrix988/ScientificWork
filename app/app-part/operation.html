@@ -3,14 +3,14 @@
   <form ng-cloak>
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <h2>{{typeOperation}}</h2>
+        <h2>{{ typeOperation.toUpperCase() + ' — ' + infoOp[typeOperation]}}</h2>
         <span flex></span>
       </div>
     </md-toolbar>
 
     <md-dialog-content>
       <div class="md-dialog-content">
-        <h2>{{boolExp.toUpperCase()}}</h2>
+        <h2>{{boolExp}}</h2>
 	    <svg ng-attr-height="{{computeScale(tableTruth.Height)}}" ng-attr-width="{{computeScale(tableTruth.Width)}}">
 	        <text ng-repeat="elem in tableTruth[0] track by $index" fill="#000" font-family="sans-serif" text-anchor="middle" font-size="12" ng-attr-x="{{computePosition($index) + 20}}" ng-attr-y="{{computePosition(0) - 5}}">{{elem.variable}}</text>
 	        <g ng-repeat="row in tableTruth track by $index" ng-init="rowIndex=$index">
@@ -18,6 +18,7 @@
 	            <text ng-repeat="elem in row track by $index" fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{computePosition($index) + 20}}" ng-attr-y="{{computePosition(rowIndex) + 27}}">{{elem.value}}</text>
 	        </g>
 	    </svg>
+      <!-- <gate></gate> -->
       </div>
     </md-dialog-content>
 

@@ -1,18 +1,16 @@
-<div class="buildFormula" ng-controller="buildCtrl" ng-init="initLoad()">
+<div class="buildFormula " ng-controller="buildCtrl" ng-init="initLoad()">
 	<h4>Уровень {{level}}</h4>
 	<div ng-repeat="item in list track by $index" >
 		<span>Src: {{item}}<br></span> 
-		<!-- <span>Min: {{Min}}</span><br> -->
 	</div>
 <div>
 
-	<svg ng-attr-height="{{widthSVG / 2}}" ng-attr-width="{{widthSVG}}">
+	<svg ng-attr-height="{{heightSVG}}" ng-attr-width="{{widthSVG}}">
 			<g ng-repeat="item in nodesArr" ng-click="item.value = !item.value; changeValue()">
-			<gate tyg="and"></gate>
-			
-			<!-- <rect ng-attr-width = "{{widthCell}}" ng-attr-height= "{{widthCell}}" ng-attr-fill="{{item.color}}" font-family="sans-serif" text-anchor="middle" ng-attr-x="{{item.position[0]}}" ng-attr-y="{{item.position[1]}}"></rect> -->
 			<text  fill="#fff" font-family="sans-serif" text-anchor="middle" font-size="15" ng-attr-x="{{item.position[0] + 15}}" ng-attr-y="{{item.position[1] + 20}}" >{{item.typeOp}}</text>	
-			<line ng-attr-stroke="{{item.color}}" ng-attr-x1="{{item.position[0] + widthCell}}" ng-attr-y1="{{item.position[1] + (widthCell / 2)}}" ng-attr-x2="{{item.position[0] + widthCell + lenPath}}" ng-attr-y2="{{item.position[1] + widthCell / 2}}" style="stroke-width:2" />
+			<path d="M {{item.arrayOfPosPath[0][0]}},{{item.arrayOfPosPath[0][1]}} L{{item.arrayOfPosPath[1][0]}},{{item.arrayOfPosPath[1][1]}} L{{item.arrayOfPosPath[2][0]}},{{item.arrayOfPosPath[2][1]}} L{{item.arrayOfPosPath[3][0]}},{{item.arrayOfPosPath[3][1]}}" ng-attr-stroke="{{item.color}}" stroke-width="2" fill="rgba(0,0,0,0)"/>
+			<gate></gate>
+<!-- 			<line ng-attr-stroke="{{item.color}}" ng-attr-x1="{{item.position[0] + widthCell}}" ng-attr-y1="{{item.position[1] + (widthCell / 2)}}" ng-attr-x2="{{item.position[0] + widthCell + lenPath}}" ng-attr-y2="{{item.position[1] + widthCell / 2}}" style="stroke-width:2" />  -->
 			</g>
 	</svg>
 </div>

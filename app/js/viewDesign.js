@@ -1,3 +1,11 @@
+var infoOperations = 
+				{not: "Отрицание",
+				and: "Логическое «И»",
+				or: "Логическое «ИЛИ»",
+				nor: "Стрелка Пирса",
+				xor: "Исключающее «ИЛИ»",
+				nand: "Штрих Шеффера"
+			};
 angular
 	.module('designApp', ['ngMaterial'])
 	.config(function($mdThemingProvider) {
@@ -9,22 +17,26 @@ angular
  		var typeOper = '';
 		$scope.status = '  ';
   		$scope.customFullscreen = false;
-  		changeTypeOp = function(typeOp){
-			$scope.typeOperation = typeOp;
-			if($scope.typeOperation == 'not'){
-				$scope.tableTruth = buildTTable(1, formulaToTruthTabl(1, '! x1'));
- 				$scope.boolExp = '¬x1';
-			}
- 			else{
-				$scope.tableTruth = buildTTable(2, formulaToTruthTabl(2, getOut($scope.typeOperation,'x1','x2')));
- 				$scope.boolExp = 'x1 ' + $scope.typeOperation + ' x2';
- 			}
-			// $scope.initFormUI();
-  		}
+  		
+  		$scope.showConfirm = function(ev) {
+    		// Appending dialog to document.body to cover sidenav in docs app
+	    var confirm = $mdDialog.confirm()
+	          .title('Would you like to delete your debt?')
+	          .textContent('All of the banks have agreed to forgive you your debts.')
+	          .ariaLabel('Lucky day')
+	          .targetEvent(ev)
+	          .ok('Please do it!')
+	          .cancel('Sounds like a scam');
+
+	    $mdDialog.show(confirm).then(function() {
+	      $scope.status = 'You decided to get rid of your debt.';
+	    }, function() {
+	      $scope.status = 'You decided to keep your debt.';
+	    });
+	  };
+
 		$scope.showAdvanced = function(ev,to) {
-			// $scope.changeTypeOp(to);
 			typeOper = to;
-			// console.log(typeOper);
 		    $mdDialog.show({
 		      controller: DialogController,
 		      templateUrl: '/app-part/operation.html',
@@ -39,15 +51,17 @@ angular
 		      $scope.status = 'You cancelled the dialog.';
 		    });
   		};
+
   		function DialogController($scope, $mdDialog) {
+  			$scope.infoOp = infoOperations;
 		    $scope.typeOperation = typeOper;
 			if($scope.typeOperation == 'not'){
 				$scope.tableTruth = buildTTable(1, formulaToTruthTabl(1, '! x1'));
- 				$scope.boolExp = '¬x1';
+ 				$scope.boolExp = getViewTypeOp('not');
 			}
  			else{
 				$scope.tableTruth = buildTTable(2, formulaToTruthTabl(2, getOut($scope.typeOperation,'x1','x2')));
- 				$scope.boolExp = 'x1 ' + $scope.typeOperation + ' x2';
+ 				$scope.boolExp =  getViewTypeOp($scope.typeOperation);
  			}
  			$scope.initFormUI = function() {
 
@@ -75,8 +89,6 @@ angular
   		}
 
  	$scope.initFormUI = function() {
- 		// console.log(typeOper);
- 		// $scope.changeTypeOp(typeOper);
 		$scope.fieldScale = 30;
 		this.fieldBorder = 20;
 		//вычисление высоты и ширины svg

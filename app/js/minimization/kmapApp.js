@@ -170,6 +170,21 @@ function getFormula() {
     }
 }
 
+function getTruthSelection(tTable){
+    var result = [];
+    tTable.forEach(function(item){
+        var n = item.length - 1;
+        if(item[n] == 1)
+            result.push(item);
+    });
+    return result;
+}
+
+function treeToFormula(tree){
+    var inputTree = tree.input;
+    return getOutFromObj(inputTree.typeOp, inputTree.input1, inputTree.input2);
+}
+
 //Преобразовывает текстовую форму функции в таблицу истинности
 function formulaToTruthTabl(n, formula) {
     var truthTable = [];
