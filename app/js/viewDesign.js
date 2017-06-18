@@ -36,6 +36,8 @@ angular
 	  };
 
 		$scope.showAdvanced = function(ev,to) {
+			if(!infoOperations.hasOwnProperty(to))
+				return;
 			typeOper = to;
 		    $mdDialog.show({
 		      controller: DialogController,
@@ -54,6 +56,11 @@ angular
 
   		function DialogController($scope, $mdDialog) {
   			$scope.infoOp = infoOperations;
+  			var gate = new GateUI();
+  			gate.add(typeOper);
+  			$scope.widthCell = 60;
+  			$scope.nodeGate = [gate];
+
 		    $scope.typeOperation = typeOper;
 			if($scope.typeOperation == 'not'){
 				$scope.tableTruth = buildTTable(1, formulaToTruthTabl(1, '! x1'));

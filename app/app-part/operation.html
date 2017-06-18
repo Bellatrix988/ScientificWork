@@ -18,7 +18,14 @@
 	            <text ng-repeat="elem in row track by $index" fill="#000000" font-family="sans-serif" text-anchor="middle" font-size="20" ng-attr-x="{{computePosition($index) + 20}}" ng-attr-y="{{computePosition(rowIndex) + 27}}">{{elem.value}}</text>
 	        </g>
 	    </svg>
-      <!-- <gate></gate> -->
+     
+       <div ng-controller="buildCtrl">
+         <g ng-repeat="item in nodeGate">
+          <span>Логический вентиль операции <b>{{item.typeOp}}</b></span> <br>
+          <center><gate></gate></center>  
+        </g>
+      </div>
+      
       </div>
     </md-dialog-content>
 

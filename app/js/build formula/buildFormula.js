@@ -45,46 +45,46 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
     return 'img/gates/' + typeOp + '.svg';
   }
 
-//возвращает массив координат пути для дочернего элемента
-function drawLogicPath(parent, child, flag){
-    var borederCell = $scope.widthCell * 36 / 100;
-    if(parent.gateType == 'not' || parent.gateType == 'out') 
-      borederCell = $scope.widthCell / 2;
-    var lenPathIn = 20;
-    var y;
-    if(flag == 1)
-      y = parent.position[1] + borederCell;
-    else
-      y = (parent.position[1] + $scope.widthCell) - borederCell;
-    var countPath = Math.abs(child.position[0] - parent.position[0]) / $scope.lenPath - 2;
-    var coords = new Array(4);
-    if(parent.gateType == 'not' || parent.gateType == 'out'){
+  //возвращает массив координат пути для дочернего элемента
+  function drawLogicPath(parent, child, flag){
+      var borederCell = $scope.widthCell * 36 / 100;
+      if(parent.gateType == 'not' || parent.gateType == 'out') 
+        borederCell = $scope.widthCell / 2;
+      var lenPathIn = 20;
+      var y;
+      if(flag == 1)
+        y = parent.position[1] + borederCell;
+      else
+        y = (parent.position[1] + $scope.widthCell) - borederCell;
+      var countPath = Math.abs(child.position[0] - parent.position[0]) / $scope.lenPath - 2;
+      var coords = new Array(4);
+      if(parent.gateType == 'not' || parent.gateType == 'out'){
+        coords[0] = [0,0];
+        coords[0][0] = child.position[0] + $scope.widthCell;
+        coords[0][1] = child.position[1] +  $scope.widthCell / 2;
+        coords[1] = [0,0];
+        coords[1][0] = coords[0][0] + $scope.lenPath + lenPathIn + 4;
+        coords[1][1] = coords[0][1];
+        coords[2] = coords[1];
+        coords[3] = coords[1];
+        return coords;
+      }
+
       coords[0] = [0,0];
-      coords[0][0] = child.position[0] + $scope.widthCell;
+      coords[0][0] = child.position[0] + $scope.widthCell - 5;
       coords[0][1] = child.position[1] +  $scope.widthCell / 2;
       coords[1] = [0,0];
-      coords[1][0] = coords[0][0] + $scope.lenPath + lenPathIn + 4;
+      coords[1][0] = coords[0][0] + $scope.lenPath * countPath + 5;
       coords[1][1] = coords[0][1];
-      coords[2] = coords[1];
-      coords[3] = coords[1];
+      coords[2] = [0,0];
+      coords[2][0] = coords[1][0];
+      coords[2][1] = y;
+      coords[3] = [0,0];
+      coords[3][0] = coords[2][0] + borederCell*2;
+      coords[3][1] = coords[2][1];
       return coords;
-    }
 
-    coords[0] = [0,0];
-    coords[0][0] = child.position[0] + $scope.widthCell - 5;
-    coords[0][1] = child.position[1] +  $scope.widthCell / 2;
-    coords[1] = [0,0];
-    coords[1][0] = coords[0][0] + $scope.lenPath * countPath + 5;
-    coords[1][1] = coords[0][1];
-    coords[2] = [0,0];
-    coords[2][0] = coords[1][0];
-    coords[2][1] = y;
-    coords[3] = [0,0];
-    coords[3][0] = coords[2][0] + borederCell*2;
-    coords[3][1] = coords[2][1];
-    return coords;
-
-}
+  }
 
   //Заполняет поля объектов массива для вывода
   function drawCircuit(arr){

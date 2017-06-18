@@ -1,3 +1,3 @@
-<svg ng-attr-x="{{item.position[0]}}" ng-attr-y="{{item.position[1]}}" ng-attr-width = "{{widthCell}}" ng-attr-height= "{{widthCell}}">
+<svg ng-attr-x="{{item.position[0]}}" ng-attr-y="{{item.position[1]}}" ng-attr-width = "{{widthCell}}" ng-attr-height= "{{widthCell}}" ng-click="showAdvanced($event, item.typeOp)">
 	<g ng-include="getPathGate(item.gateType)"></g>
 </svg>
