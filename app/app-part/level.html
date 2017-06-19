@@ -1,13 +1,17 @@
 <div class="buildFormula kmap" ng-controller="buildCtrl" ng-init="initLoad()">
 	<h4>Уровень {{level}}</h4>
-	<div ng-repeat="item in list track by $index" >
+<!-- 	<div ng-repeat="item in list track by $index" >
 		<span>Src: {{item}}<br></span> 
-	</div>
+	</div> -->
 <div ng-controller="AppCtrl">
 
 	<svg ng-attr-height="{{heightSVG}}" ng-attr-width="{{widthSVG}}" ng-click="userClick()">
 			<g ng-repeat="item in nodesArr">
-			<path ng-attr-d="M {{item.arrayOfPosPath[0][0]}},{{item.arrayOfPosPath[0][1]}} L{{item.arrayOfPosPath[1][0]}},{{item.arrayOfPosPath[1][1]}} L{{item.arrayOfPosPath[2][0]}},{{item.arrayOfPosPath[2][1]}} L{{item.arrayOfPosPath[3][0]}},{{item.arrayOfPosPath[3][1]}}" ng-attr-stroke="{{item.color}}" stroke-width="2" fill="rgba(0,0,0,0)"/>
+				<g ng-repeat="elem in item.arrayOfPosPath track by $index">
+					<path ng-attr-d="M {{elem[0][0]}},{{elem[0][1]}} L{{elem[1][0]}},{{elem[1][1]}} L{{elem[2][0]}},{{elem[2][1]}} L{{elem[3][0]}},{{elem[3][1]}}" ng-attr-stroke="{{item.color}}" stroke-width="2" fill="rgba(0,0,0,0)"/>
+				</g>
+
+			<!-- <path ng-attr-d="M {{item.arrayOfPosPath[0][0]}},{{item.arrayOfPosPath[0][1]}} L{{item.arrayOfPosPath[1][0]}},{{item.arrayOfPosPath[1][1]}} L{{item.arrayOfPosPath[2][0]}},{{item.arrayOfPosPath[2][1]}} L{{item.arrayOfPosPath[3][0]}},{{item.arrayOfPosPath[3][1]}}" ng-attr-stroke="{{item.color}}" stroke-width="2" fill="rgba(0,0,0,0)"/> -->
 			<gate></gate>
 			</g>
 	</svg>

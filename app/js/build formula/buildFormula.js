@@ -27,11 +27,10 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
 
   $scope.level;
   $scope.countVariable;
-  $scope.probares;
   $scope.probresSegment = [
-  ['0.8','0.7','0.7','0.6','0','0','1'],
   ['0.7','0.6','0.6','0.7','0','0','1'],
-  ['0.7','0.6','0.6','0.7','1','0','0.9'],
+  ['0.7','0.6','0.7','0.7','1','0','0.9'],
+  ['0.6','0.7','0.7','0.6','1','0','0.9'],
   ['0.8','0.6','0.8','0.7','1','0','0.9']
 ];
   $scope.list = [];
@@ -46,9 +45,12 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
 
   $scope.initLoad = function(){
     setupCountVars($scope.level);
+    if($scope.probares == undefined)
+      $scope.probares = $scope.probresSegment[($scope.level) % 4];
     setupGrammar($scope.countVariable, $scope.probares);
     $scope.list.addExpression(cfree.getExpression('E', $scope.tree));
     $scope.nodesArr = initTreeNodes($scope.tree);
+    console.log('nodesArr',$scope.nodesArr);
     $scope.nodesArr = $scope.nodesArr.sort(keysrt('id')).sort(keysrt('layer')).reverse();
     setInputVector($scope.nodesArr);
     drawCircuit($scope.nodesArr);
@@ -132,7 +134,7 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
             item.value = eval(getOut(item.input.typeOp, item.input.input1.value, item.input.input2.value));
             item.position[1] = item.input.position[1];
             item.position[0] = item.input.position[0] + $scope.lenPath + $scope.widthCell;
-            item.input.arrayOfPosPath = drawLogicPath(item, item.input, 1);
+            item.input.arrayOfPosPath.push(drawLogicPath(item, item.input, 1));
             $scope.widthSVG = (index +1) * dist + border;
             $scope.heightSVG = (maxlvl + 1) * borderHeight;
          }
@@ -146,8 +148,10 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
                 //ему позицию элемента с таким же id(если есть)
                 if(item.input1.position[0] == 0){
                   item.input1.position = getElemByID($scope.nodesArr, item.id).position;
+                  // item.input1 = getElemByID($scope.nodesArr, item.id);
                 }
                 if(item.input2.position[0] == 0){
+                  // item.input2 = getElemByID($scope.nodesArr, item.id);
                   item.input2.position = getElemByID($scope.nodesArr, item.id).position;
                 }
                
@@ -157,14 +161,14 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
                yChild = in2 + (((in1 - in2) - $scope.widthCell) / 2);
                 item.position[0] = xChild + border + lvl * dist;
                 item.position[1] = yChild + border;
-                item.input1.arrayOfPosPath = drawLogicPath(item, item.input1, 1);
-                item.input2.arrayOfPosPath = drawLogicPath(item, item.input2, 2);
+                item.input1.arrayOfPosPath.push(drawLogicPath(item, item.input1, 1));
+                item.input2.arrayOfPosPath.push(drawLogicPath(item, item.input2, 2));
                 item.value =  eval(getOut(item.typeOp,item.input1.value,item.input2.value));
                 item.color = item.value ? "green" : "orangered";
             } else{
             if(item.input1 != null && item.input2 == null){ //унарная операция
               item.value = eval(getOut(item.typeOp,item.input1.value,null));
-              item.input1.arrayOfPosPath = drawLogicPath(item, item.input1, 1);
+              item.input1.arrayOfPosPath.push(drawLogicPath(item, item.input1, 1));
               item.value = eval(getOut(item.typeOp,item.input1.value, null));
             }
             item.position[0] = xChild + border + lvl * dist;
@@ -244,12 +248,23 @@ function computeRating(countUserClick){
       var variables = [];
         for(i = 1; i <= countVariable; i++)
           variables[i - 1] = "x" + i.toString();
-
+          var opsFirst = ['and','nand'];
+          var opsSecond = ['or','nor','xor']
           //при повышении уровня будут добавляться
-          var operationsPriorityFirst = ['and'];
-          var operationsPrioritySecond = ['or','nor'];
+          var operationsPriorityFirst = opsFirst;
+          var operationsPrioritySecond = opsSecond;
           var not = 'not';//'!';
          
+         //  cfree.addRule('E', [ 'E',operationsPrioritySecond[0], 'T'], parseInt(probares[0]) - 0.1);
+         //  for(var j = 0; j < operationsPrioritySecond.length; j++)
+         //    cfree.addRule('E', [ 'E',operationsPrioritySecond[j], 'T'], probares[0]);
+         // cfree.addRule('E', ['T'], probares[1]);
+
+         // cfree.addRule('T', [ 'T',operationsPriorityFirst[0], 'F'],  parseInt(probares[2]) - 0.1);
+         //  for(var j = 0; j < operationsPriorityFirst.length; j++)
+         //    cfree.addRule('T', [ 'T',operationsPriorityFirst[j], 'F'], probares[2]);
+         // cfree.addRule('T', ['F'], probares[3]);
+
          cfree.addRule('E', [ 'T',operationsPrioritySecond[0], 'T'], parseInt(probares[0]) - 0.1);
           for(var j = 0; j < operationsPrioritySecond.length; j++)
             cfree.addRule('E', [ 'T',operationsPrioritySecond[j], 'T'], probares[0]);

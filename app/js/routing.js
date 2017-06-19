@@ -30,7 +30,7 @@ routingApp.config(function($stateProvider, $urlRouterProvider) {
             controller: 'changeLvl',
             params: {
                 level: 11,
-                probares: ['0.7','0.6','0.8','0.7','1','0','0.9']
+                probares: ['0.8','0.7','0.8','0.6','0','0','1']
             }
         })
 
