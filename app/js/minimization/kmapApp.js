@@ -170,11 +170,11 @@ function getFormula() {
     }
 }
 
-function getTruthSelection(tTable){
+function getSelection(tTable, val){
     var result = [];
     tTable.forEach(function(item){
         var n = item.length - 1;
-        if(item[n] == 1)
+        if(item[n] == val)
             result.push(item);
     });
     return result;

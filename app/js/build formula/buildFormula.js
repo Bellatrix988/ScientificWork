@@ -37,6 +37,7 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
     $scope.list.addExpression(cfree.getExpression('E', $scope.tree));
     $scope.nodesArr = initTreeNodes($scope.tree);
     $scope.nodesArr = $scope.nodesArr.sort(keysrt('id')).sort(keysrt('layer')).reverse();
+    setInputVector($scope.nodesArr);
     drawCircuit($scope.nodesArr);
     console.log('nodesArr',$scope.nodesArr);
   }
@@ -44,7 +45,25 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
   $scope.getPathGate = function(typeOp){
     return 'img/gates/' + typeOp + '.svg';
   }
-
+  function setInputVector(arr){
+        arr.forEach(function(item, index){
+        if(item instanceof outCell){
+            var truthSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),1);
+            var falseSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),0);
+            var mySelect = falseSelection.choiceRandom();
+            for(var i = 0; i < mySelect.length; i++){
+              let varX = 'x' + (i + 1);
+              // let elem = item.input.getById(varX);
+              let elem = getElemByID(arr, varX);
+              if(elem != null){
+                elem.value = mySelect[i] == 1? true : false;
+                elem.color = elem.value ? "green" : "orangered";
+              }
+            }
+            console.log("TRUTH SELECTION:", truthSelection, mySelect);
+         }
+       });
+  }
   //возвращает массив координат пути для дочернего элемента
   function drawLogicPath(parent, child, flag){
       var borederCell = $scope.widthCell * 36 / 100;
@@ -100,9 +119,24 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
         let borderHeight = (border + $scope.widthCell) * item.layerCount;
         let dist = ($scope.lenPath + $scope.widthCell + border);
         if(item instanceof outCell){
+            item.value = eval(getOut(item.input.typeOp, item.input.input1.value, item.input.input2.value));
             item.position[1] = item.input.position[1];
             item.position[0] = item.input.position[0] + $scope.lenPath + $scope.widthCell;
             item.input.arrayOfPosPath = drawLogicPath(item, item.input, 1);
+        //     var truthSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),1);
+        //     var falseSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),0);
+        //     var mySelect = falseSelection.choiceRandom();
+        //     for(var i = 0; i < mySelect.length; i++){
+        //       let varX = 'x' + (i + 1);
+        //       // let elem = item.input.getById(varX);
+        //       let elem = getElemByID(arr, varX);
+        //       if(elem != null){
+        //         elem.value = mySelect[i] == 1? true : false;
+        //         elem.color = elem.value ? "green" : "orangered";
+        //       }
+        //     }
+        //     console.log("TRUTH SELECTION:", truthSelection, mySelect);
+
             $scope.widthSVG = index * dist + border;
             $scope.heightSVG = (maxlvl + 1) * borderHeight;
          }
@@ -129,18 +163,23 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
                 item.position[1] = yChild + border;
                 item.input1.arrayOfPosPath = drawLogicPath(item, item.input1, 1);
                 item.input2.arrayOfPosPath = drawLogicPath(item, item.input2, 2);
-
+                item.value =  eval(getOut(item.typeOp,item.input1.value,item.input2.value));
+                item.color = item.value ? "green" : "orangered";
             } else{
             if(item.input1 != null && item.input2 == null){ //унарная операция
               item.value = eval(getOut(item.typeOp,item.input1.value,null));
               item.input1.arrayOfPosPath = drawLogicPath(item, item.input1, 1);
+              item.value = eval(getOut(item.typeOp,item.input1.value, null));
             }
             item.position[0] = xChild + border + lvl * dist;
             item.position[1] = yChild + border + borderHeight;
+            item.color = item.value ? "green" : "orangered";
           }
         }
       })
   }
+
+
 
   //вызывается при клике на входыне сигналы
   $scope.changeValue = function(){
@@ -148,17 +187,21 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
           if(item instanceof outCell){
             // item.input.getElemByID()
             item.value = item.input.value;
-             var truthSelection = getTruthSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)));
-    var mySelect = truthSelection.choiceRandom();
-    
-    console.log("TRUTH SELECTION:", truthSelection);
+            // var truthSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),1);
+            // var falseSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),0);
+            // var mySelect = falseSelection.choiceRandom();
+            // for(var i = 0; i < mySelect.length; i++){
+            //   let varX = 'x' + (i + 1);
+            //   let elem = item.input.getById(varX);
+            //   if(elem != undefined)
+            //     elem.value = mySelect[i] == 1;
+            // }
             if(item.value == true){
-              alert('You winner!!!');
+              // alert('You winner!!!');
             }
           } else{
             if(item.input1 != null && item.input2 != null){
               item.value =  eval(getOut(item.typeOp,item.input1.value,item.input2.value));
-              // item.value =  eval(item.input1.value + item.typeOp + item.input2.value);
             } 
             if(item.input1 != null && item.input2 == null){
               item.value = eval(getOut(item.typeOp,item.input1.value, null));
@@ -180,6 +223,10 @@ exprApp.directive('gate', function() {
   });
 
 ///#########Вспомогательные функции
+
+function computeRating(){
+
+}
 
 //region grammarFunc
 

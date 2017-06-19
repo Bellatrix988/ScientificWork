@@ -64,7 +64,7 @@ function GateUI(){
     this.position = [0.0, 0.0];
     this.id = -1;
     this.value = false; //this.getOut();
-    this.color = this.value ? "green" : "orange"; //or orange
+    this.color = this.value ? "green" : "orangered"; //or orange
     this.layer = 0;
     this.gateType;
     this.layerCount = -1; //используется для отслеживания кол-ва узлов на одном уровне
@@ -76,6 +76,7 @@ function GateUI(){
 GateUI.prototype = Object.create(Node.prototype);
 
 GateUI.prototype.constructor = GateUI;
+
 GateUI.prototype.add = function(typeOp){
     this.typeOp = typeOp;
     this.input1 = new GateUI();
@@ -88,15 +89,12 @@ GateUI.prototype.add = function(typeOp){
 //Находит среди всего объекта(включая потомки) элемент по id. 
 //Если не найдено - undefined
 GateUI.prototype.getById = function(id){
-    if(this != null){
-        if(hasNumbers(this.typeOp))
-            return this.id == id? this : undefined;
-        else{
-            this.input1.getById(id);
-            this.input2.getById(id);
-        }
-    }else
-    return undefined;
+    if(this == null || this.id == id)
+        return this;
+    if(this.input1 != null)
+        return this.input1.getById(id);
+    if(this.input2 != null)
+        return this.input2.getById(id);
 }
 
 //Переопределение метода добавления переменной с учетом новых полей
@@ -135,7 +133,7 @@ function outCell(obj){
     this.gateType = 'out';
     this.id = 'out';
     this.value = false;
-    this.color = this.value ? "green" : "orange"; //or orange
+    this.color = this.value ? "green" : "orangered"; //or orange
     this.layer = -1;
     this.layerCount = 1;
 }
