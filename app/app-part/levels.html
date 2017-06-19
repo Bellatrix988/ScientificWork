@@ -1,5 +1,5 @@
 <section class="container">
 <div class="levels" ng-controller="infoCtrl">
-	<button  ng-repeat="lvl in [] | range:1:31" class="btn" ui-sref="level({level: lvl, probares: ['0.7','0.6','0.6','0.7','0','0','0.9']})" ng-disabled="lvl > (userInfo.level + 30)">{{lvl}}<br><img src="img/star.svg" width="20px" > <img src="img/star.svg" width="20px" > <img src="img/star.svg" width="20px"></button>
+	<button  ng-repeat="lvl in [] | range:1:31" class="btn" ui-sref="level({level: lvl, probares: probresSegment[(lvl-1) % 4]})" ng-disabled="lvl > (userInfo.level + 30)">{{lvl}}<br><img src="img/star.svg" width="20px" > <img src="img/star.svg" width="20px" > <img src="img/star.svg" width="20px"></button>
 </div>
 </section>

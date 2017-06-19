@@ -10,10 +10,13 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
   } 
   //устанавливает кол-во переменных для каждого уровня
   setupCountVars = function(lvl){
-    if(lvl >= 1 && lvl <= 4)
+    if(lvl >= 1 && lvl <= 4){
       $scope.countVariable = 2;
-    if(lvl >= 5 && lvl <= 10)
+      $scope.probares = $scope.probresSegment[0];
+    }
+    if(lvl >= 5 && lvl <= 10){
       $scope.countVariable = 3;
+    }
     if(lvl >= 11 && lvl <= 16)
       $scope.countVariable = 4;
     if(lvl >= 17 && lvl <= 23)
@@ -25,11 +28,21 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
   $scope.level;
   $scope.countVariable;
   $scope.probares;
+  $scope.probresSegment = [
+  ['0.8','0.7','0.7','0.6','0','0','1'],
+  ['0.7','0.6','0.6','0.7','0','0','1'],
+  ['0.7','0.6','0.6','0.7','1','0','0.9'],
+  ['0.8','0.6','0.8','0.7','1','0','0.9']
+];
   $scope.list = [];
   $scope.tree = new Node();
   $scope.nodesArr;
   $scope.widthSVG;
-  $scope.heightSVG;
+  $scope.heightSVG; 
+  $scope.countUserClick = 0;
+  $scope.userClick = function() {
+    $scope.countUserClick++;
+  }
 
   $scope.initLoad = function(){
     setupCountVars($scope.level);
@@ -102,9 +115,7 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
       coords[3][0] = coords[2][0] + borederCell*2;
       coords[3][1] = coords[2][1];
       return coords;
-
   }
-
   //Заполняет поля объектов массива для вывода
   function drawCircuit(arr){
       var maxlvl = arr[0].layer;
@@ -112,7 +123,6 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
       $scope.widthCell = 50;
       $scope.lenPath = 40;
       $scope.widthSVG = 0;
-   
 
       arr.forEach(function(item, index){
         let lvl = maxlvl - item.layer;
@@ -123,21 +133,7 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
             item.position[1] = item.input.position[1];
             item.position[0] = item.input.position[0] + $scope.lenPath + $scope.widthCell;
             item.input.arrayOfPosPath = drawLogicPath(item, item.input, 1);
-        //     var truthSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),1);
-        //     var falseSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),0);
-        //     var mySelect = falseSelection.choiceRandom();
-        //     for(var i = 0; i < mySelect.length; i++){
-        //       let varX = 'x' + (i + 1);
-        //       // let elem = item.input.getById(varX);
-        //       let elem = getElemByID(arr, varX);
-        //       if(elem != null){
-        //         elem.value = mySelect[i] == 1? true : false;
-        //         elem.color = elem.value ? "green" : "orangered";
-        //       }
-        //     }
-        //     console.log("TRUTH SELECTION:", truthSelection, mySelect);
-
-            $scope.widthSVG = index * dist + border;
+            $scope.widthSVG = (index +1) * dist + border;
             $scope.heightSVG = (maxlvl + 1) * borderHeight;
          }
          else{
@@ -179,25 +175,19 @@ exprApp.controller("buildCtrl", function($scope, InitGrammarService){
       })
   }
 
-
-
   //вызывается при клике на входыне сигналы
   $scope.changeValue = function(){
+    function winner() {
+       var rating = computeRating($scope.countUserClick);
+       console.log("rating", rating);
+        alert('Your winner. Rating: ', computeRating($scope.countUserClick));
+    }
+
     $scope.nodesArr.forEach(function(item){
           if(item instanceof outCell){
-            // item.input.getElemByID()
             item.value = item.input.value;
-            // var truthSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),1);
-            // var falseSelection = getSelection(formulaToTruthTabl($scope.countVariable,treeToFormula(item)),0);
-            // var mySelect = falseSelection.choiceRandom();
-            // for(var i = 0; i < mySelect.length; i++){
-            //   let varX = 'x' + (i + 1);
-            //   let elem = item.input.getById(varX);
-            //   if(elem != undefined)
-            //     elem.value = mySelect[i] == 1;
-            // }
             if(item.value == true){
-              // alert('You winner!!!');
+              setTimeout(winner, 500);
             }
           } else{
             if(item.input1 != null && item.input2 != null){
@@ -224,9 +214,17 @@ exprApp.directive('gate', function() {
 
 ///#########Вспомогательные функции
 
-function computeRating(){
-
+//вычисление рейтинга будет зависеть от входного и выходного вектора
+function computeRating(countUserClick){
+    if(countUserClick < 5)
+    return 3;
+    if(countUserClick > 5 && countUserClick < 7)
+      return 2;
+    if(countUserClick > 7 && countUserClick < 10)
+      return 1;
 }
+
+
 
 //region grammarFunc
 
